@@ -5,13 +5,3 @@
   "scripts": { "start": "node server.js" },
   "dependencies": { "express": "^4.18.2" }
 }
-```
-
----
-
-**Your project folder should look like this:**
-```
-rbcci-cis-form/
-├── RBS005a_CIS_WebBoard_Green.html
-├── server.js
-└── package.json
