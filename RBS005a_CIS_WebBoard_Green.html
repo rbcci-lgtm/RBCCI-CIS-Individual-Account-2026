@@ -680,6 +680,22 @@ select.form-input {
 }
 .btn-sheets:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(15,157,88,.45); }
 .btn-sheets.loading { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
+.btn-pdf {
+  background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%);
+  color: white; box-shadow: 0 2px 8px rgba(183,28,28,.3);
+}
+.btn-pdf:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(183,28,28,.4); }
+@media print {
+  .pdf-print-mode .header { position: relative !important; }
+  .pdf-print-mode .actions-bar,
+  .pdf-print-mode .progress-bar,
+  .pdf-print-mode .toast,
+  .pdf-print-mode .autosave-bar,
+  .pdf-print-mode .autosave-settings { display: none !important; }
+  .pdf-print-mode .section { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; }
+  .pdf-print-mode .section.collapsed .section-body { max-height: none !important; opacity: 1 !important; padding: 24px !important; }
+  .pdf-print-mode body::before, .pdf-print-mode body::after { display: none !important; }
+}
 
 /* Export overlay */
 .export-overlay {
@@ -989,6 +1005,7 @@ select.form-input {
   .section { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
   .section.collapsed .section-body { max-height: none !important; opacity: 1 !important; padding: 24px !important; }
   body::before, body::after { display: none; }
+  .pdf-watermark { display: block !important; }
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.min.js"></script>
@@ -1325,6 +1342,7 @@ select.form-input {
 <!-- ACTIONS -->
 <div class="actions-bar">
   <button class="btn btn-secondary" id="btnPrint">🖨️ Print</button>
+  <button class="btn btn-pdf" id="btnPdf">📥 Save as PDF</button>
   <button class="btn btn-primary" id="btnSave">💾 Save Draft</button>
   <button class="btn btn-docx" id="btnDocx">📄 Export DOCX</button>
   <button class="btn btn-xlsx" id="btnXlsx">📊 Export Excel</button>
@@ -1558,7 +1576,57 @@ const obs = new IntersectionObserver(entries => {
 document.querySelectorAll('.section').forEach(s => obs.observe(s));
 
 /* ---------- ACTION BUTTONS ---------- */
-document.getElementById('btnPrint').onclick = () => window.print();
+
+// Helper: expand all collapsed sections before print/PDF
+function expandAllSections() {
+  document.querySelectorAll('.section.collapsed').forEach(sec => {
+    sec.classList.remove('collapsed');
+    sec._wasCollapsed = true;
+  });
+}
+// Helper: restore collapsed state after print/PDF
+function restoreCollapsed() {
+  document.querySelectorAll('.section').forEach(sec => {
+    if (sec._wasCollapsed) {
+      sec.classList.add('collapsed');
+      delete sec._wasCollapsed;
+    }
+  });
+}
+
+// PRINT
+document.getElementById('btnPrint').onclick = () => {
+  expandAllSections();
+  toast('🖨️ Opening print dialog…');
+  setTimeout(() => {
+    window.print();
+    // Restore after dialog closes (best-effort)
+    setTimeout(restoreCollapsed, 1000);
+  }, 300);
+};
+
+// SAVE AS PDF
+document.getElementById('btnPdf').onclick = () => {
+  expandAllSections();
+  toast('📥 Preparing PDF — select "Save as PDF" in the print dialog…');
+  // Small delay to let sections render fully
+  setTimeout(() => {
+    // Set document title temporarily for a cleaner PDF filename
+    const origTitle = document.title;
+    const data = collectFormData();
+    const lastName = data['I. Customer Profile_Last Name & Suffix'] ||
+                     data['Last Name & Suffix'] ||
+                     Object.values(data).find(v => v && typeof v === 'string' && v.length > 0) ||
+                     'CIS';
+    document.title = 'RBCCI_CIS_' + lastName.replace(/\s+/g, '_') + '_' + new Date().toLocaleDateString('en-PH').replace(/\//g, '-');
+    window.print();
+    // Restore title and collapsed state
+    setTimeout(() => {
+      document.title = origTitle;
+      restoreCollapsed();
+    }, 1000);
+  }, 350);
+};
 document.getElementById('btnSave').onclick = () => {
   AutoSave.manualSave();
 };
