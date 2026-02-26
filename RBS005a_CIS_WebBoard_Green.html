@@ -626,6 +626,12 @@ select.form-input {
   margin-top: 4px;
 }
 .esig-name-input::placeholder { color: #aaa; font-style: italic; font-size: 11px; }
+.esig-date-input {
+  border: none; border-bottom: 1.5px solid #2E5935;
+  background: transparent; font-family: inherit;
+  font-size: 11px; color: #1a1a2e; padding: 2px 2px;
+  outline: none; flex: 1;
+}
 .esig-name-input {
   width: 100%; box-sizing: border-box;
   border: none; border-bottom: 1.5px solid #2E5935;
@@ -710,6 +716,8 @@ select.form-input {
   box-shadow: 0 2px 8px rgba(15,157,88,.35);
 }
 .btn-sheets:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(15,157,88,.45); }
+.btn-sig { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; box-shadow: 0 2px 8px rgba(124,58,237,.35); }
+.btn-sig:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,58,237,.45); }
 .btn-sheets.loading { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
 .btn-pdf {
   background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%);
@@ -1906,7 +1914,8 @@ select.form-input {
           <div class="pt-esig-name" id="ptEsigName0"></div>
         </div>
         <div class="pt-sig-lbl">Depositor's Signature Over Printed Name</div>
-        <div class="pt-sig-date">Date: _______________</div>
+        <div id="ptEsigName0" class="pt-esig-name"></div>
+        <div class="pt-sig-date" id="ptEsigDate0">Date: _______________</div>
       </div>
       <div class="pt-sig">
         <div class="pt-sig-name-wrap">
@@ -1915,7 +1924,8 @@ select.form-input {
           <div class="pt-esig-name" id="ptEsigName1"></div>
         </div>
         <div class="pt-sig-lbl">Authorized Contact Person's Signature</div>
-        <div class="pt-sig-date">Date: _______________</div>
+        <div id="ptEsigName1" class="pt-esig-name"></div>
+        <div class="pt-sig-date" id="ptEsigDate1">Date: _______________</div>
       </div>
     </div>
   </div>
@@ -1961,6 +1971,8 @@ select.form-input {
           <div class="pt-esig-name" id="ptEsigName2"></div>
         </div>
         <div class="pt-sig-lbl">Signature over Printed Name of Account Holder / Date</div>
+        <div id="ptEsigName2" class="pt-esig-name"></div>
+        <div class="pt-sig-date" id="ptEsigDate2">Date: _______________</div>
       </div>
       <div class="pt-sig">
         <div class="pt-sig-name-wrap">
@@ -1969,6 +1981,8 @@ select.form-input {
           <div class="pt-esig-name" id="ptEsigName3"></div>
         </div>
         <div class="pt-sig-lbl">Verified By / Date</div>
+        <div id="ptEsigName3b" class="pt-esig-name"></div>
+        <div class="pt-sig-date" id="ptEsigDate3">Date: _______________</div>
       </div>
       <div class="pt-sig">
         <div class="pt-sig-name-wrap">
@@ -1977,6 +1991,8 @@ select.form-input {
           <div class="pt-esig-name" id="ptEsigName4"></div>
         </div>
         <div class="pt-sig-lbl">Approved By / Date</div>
+        <div id="ptEsigName4b" class="pt-esig-name"></div>
+        <div class="pt-sig-date" id="ptEsigDate4">Date: _______________</div>
       </div>
     </div>
   </div>
@@ -2403,7 +2419,10 @@ select.form-input {
           <button class="esig-btn esig-btn-undo" onclick="esigUndo(0)">↩ Undo</button>
         </div>
         <input class="esig-name-input" data-esig-name="0" type="text" placeholder="Type printed name here…">
-        <div class="signature-date">Date: ________________</div>
+        <div class="signature-date" style="display:flex; align-items:center; gap:6px;">
+          <label style="font-size:11px; color:var(--text-light); white-space:nowrap;">Date:</label>
+          <input type="date" class="esig-date-input" data-esig-date="0">
+        </div>
       </div>
       <!-- E-Signature Pad 1: Authorized Contact Person -->
       <div class="signature-box esig-box">
@@ -2417,7 +2436,10 @@ select.form-input {
           <button class="esig-btn esig-btn-undo" onclick="esigUndo(1)">↩ Undo</button>
         </div>
         <input class="esig-name-input" data-esig-name="1" type="text" placeholder="Type printed name here…">
-        <div class="signature-date">Date: ________________</div>
+        <div class="signature-date" style="display:flex; align-items:center; gap:6px;">
+          <label style="font-size:11px; color:var(--text-light); white-space:nowrap;">Date:</label>
+          <input type="date" class="esig-date-input" data-esig-date="1">
+        </div>
       </div>
     </div>
   </div>
@@ -2450,7 +2472,10 @@ select.form-input {
           <button class="esig-btn esig-btn-undo" onclick="esigUndo(2)">↩ Undo</button>
         </div>
         <input class="esig-name-input" data-esig-name="2" type="text" placeholder="Type printed name here…">
-        <div class="signature-date">Date: ________________</div>
+        <div class="signature-date" style="display:flex; align-items:center; gap:6px;">
+          <label style="font-size:11px; color:var(--text-light); white-space:nowrap;">Date:</label>
+          <input type="date" class="esig-date-input" data-esig-date="2">
+        </div>
       </div>
       <!-- E-Signature Pad 3: Verified By -->
       <div class="signature-box esig-box">
@@ -2464,7 +2489,10 @@ select.form-input {
           <button class="esig-btn esig-btn-undo" onclick="esigUndo(3)">↩ Undo</button>
         </div>
         <input class="esig-name-input" data-esig-name="3" type="text" placeholder="Type printed name here…">
-        <div class="signature-date">Date: ________________</div>
+        <div class="signature-date" style="display:flex; align-items:center; gap:6px;">
+          <label style="font-size:11px; color:var(--text-light); white-space:nowrap;">Date:</label>
+          <input type="date" class="esig-date-input" data-esig-date="3">
+        </div>
       </div>
       <!-- E-Signature Pad 4: Approved By -->
       <div class="signature-box esig-box">
@@ -2478,7 +2506,10 @@ select.form-input {
           <button class="esig-btn esig-btn-undo" onclick="esigUndo(4)">↩ Undo</button>
         </div>
         <input class="esig-name-input" data-esig-name="4" type="text" placeholder="Type printed name here…">
-        <div class="signature-date">Date: ________________</div>
+        <div class="signature-date" style="display:flex; align-items:center; gap:6px;">
+          <label style="font-size:11px; color:var(--text-light); white-space:nowrap;">Date:</label>
+          <input type="date" class="esig-date-input" data-esig-date="4">
+        </div>
       </div>
     </div>
 
@@ -2489,6 +2520,7 @@ select.form-input {
 <div class="actions-bar">
   <button class="btn btn-secondary" id="btnPrint">🖨️ Print</button>
   <button class="btn btn-pdf" id="btnPdf">📥 Save as PDF</button>
+  <button class="btn btn-sig" id="btnSaveSig" onclick="saveAccountHolderSignature()">🖊️ Save Signature</button>
   <button class="btn btn-primary" id="btnSave">💾 Save Draft</button>
   <button class="btn btn-docx" id="btnDocx">📄 Export DOCX</button>
   <button class="btn btn-xlsx" id="btnXlsx">📊 Export Excel</button>
@@ -3049,6 +3081,45 @@ function removePhoto(slot) {
 })();
 
 
+// ── SAVE ACCOUNT HOLDER SIGNATURE → GOOGLE DRIVE ────────────────────
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywTMbRqqX3Qnx0w0TpG7qI-_EfKCF2h3MV-Z0oDW5mV_FqfiNOd04GsPLGEGhTPIQpOA/exec';
+
+function saveAccountHolderSignature() {
+  const dataUrl = window.esigGetDataUrl ? window.esigGetDataUrl(2) : null;
+  if (!dataUrl) {
+    toast('⚠️ No signature found. Please sign on the Account Holder pad first.');
+    return;
+  }
+  if (APPS_SCRIPT_URL === 'PASTE_YOUR_WEB_APP_URL_HERE') {
+    toast('⚠️ Apps Script URL not configured yet.');
+    return;
+  }
+
+  const nameInput = document.querySelector('[data-esig-name="2"]');
+  const name = nameInput ? nameInput.value.trim().replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'') : '';
+  const date = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const filename = 'Signature_' + (name || 'AccountHolder') + '_' + date + '.png';
+
+  toast('⏳ Saving signature to Google Drive…');
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ image: dataUrl, filename: filename })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'success') {
+      toast('✅ Signature saved to Google Drive: ' + data.name);
+    } else {
+      toast('❌ Failed to save: ' + (data.message || 'Unknown error'));
+    }
+  })
+  .catch(err => {
+    toast('❌ Connection error: ' + err.message);
+  });
+}
+
 // ── Export helper ──────────────────────────────────────────────────
 function getPhotoDataUrls() {
   return {
@@ -3337,14 +3408,25 @@ function buildPrintTemplate() {
   fill('ptID2Place',  getSubVal('Additional ID','Place Issued'));
   fill('ptID2Date',   getSubVal('Additional ID','Date'));
 
-  // E-Signatures (all 5 pads) — signature overlaid on typed printed name
+  // E-Signatures (all 5 pads) — signature overlaid on typed printed name + date
   [0,1,2,3,4].forEach(function(i) {
-    const dataUrl  = window.esigGetDataUrl ? window.esigGetDataUrl(i) : null;
+    const dataUrl   = window.esigGetDataUrl ? window.esigGetDataUrl(i) : null;
     const nameInput = document.querySelector('[data-esig-name="'+i+'"]');
+    const dateInput = document.querySelector('[data-esig-date="'+i+'"]');
     const typedName = nameInput ? nameInput.value.trim() : '';
-    const img    = document.getElementById('ptEsigImg'  + i);
+    const typedDate = dateInput ? dateInput.value : '';
+    const img     = document.getElementById('ptEsigImg'  + i);
     const nameOut = document.getElementById('ptEsigName' + i);
+    const dateOut = document.getElementById('ptEsigDate' + i);
     if (nameOut) nameOut.textContent = typedName;
+    if (dateOut) {
+      if (typedDate) {
+        const p = typedDate.split('-');
+        dateOut.textContent = 'Date: ' + (p.length === 3 ? p[1]+'/'+p[2]+'/'+p[0] : typedDate);
+      } else {
+        dateOut.textContent = 'Date: _______________';
+      }
+    }
     if (img) {
       if (dataUrl) {
         img.setAttribute('src', dataUrl);
