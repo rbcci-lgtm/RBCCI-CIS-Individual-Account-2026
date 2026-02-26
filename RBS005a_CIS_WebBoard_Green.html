@@ -604,6 +604,37 @@ select.form-input {
 .signature-label { font-size: 11px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: .5px; }
 .signature-date { margin-top: 16px; font-size: 12px; color: var(--text-light); }
 
+/* ── E-Signature Pad ── */
+.esig-box { padding: 12px 14px 10px; display: flex; flex-direction: column; gap: 6px; }
+.esig-label-top { font-size: 11px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.esig-pad-wrap { position: relative; border: 1.5px dashed #2E5935; border-radius: 6px; background: #f8fcf8; cursor: crosshair; overflow: hidden; }
+.esig-canvas { display: block; width: 100%; height: 120px; touch-action: none; }
+.esig-placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 13px; color: #aaa; pointer-events: none; transition: opacity .2s; }
+.esig-placeholder.hidden { opacity: 0; }
+.esig-controls { display: flex; gap: 8px; }
+.esig-btn { border: none; border-radius: 4px; padding: 4px 12px; font-size: 11px; cursor: pointer; font-family: inherit; }
+.esig-btn-clear { background: #fee2e2; color: #b91c1c; }
+.esig-btn-clear:hover { background: #fca5a5; }
+.esig-btn-undo { background: #e0f2fe; color: #0369a1; }
+.esig-btn-undo:hover { background: #bae6fd; }
+.esig-name-input {
+  width: 100%; box-sizing: border-box;
+  border: none; border-bottom: 1.5px solid #2E5935;
+  background: transparent; font-family: inherit;
+  font-size: 12px; color: #1a1a2e; padding: 4px 2px;
+  outline: none; text-align: center;
+  margin-top: 4px;
+}
+.esig-name-input::placeholder { color: #aaa; font-style: italic; font-size: 11px; }
+.esig-name-input {
+  width: 100%; box-sizing: border-box;
+  border: none; border-bottom: 1.5px solid #2E5935;
+  background: transparent; font-family: inherit;
+  font-size: 12px; color: #1a1a2e; text-align: center;
+  padding: 3px 4px; outline: none; margin-top: 4px;
+}
+.esig-name-input::placeholder { color: #bbb; font-style: italic; font-size: 11px; }
+
 /* ======================= TOAST NOTIFICATION ======================= */
 .toast {
   position: fixed; bottom: 80px; left: 50%;
@@ -682,20 +713,10 @@ select.form-input {
 .btn-sheets.loading { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
 .btn-pdf {
   background: linear-gradient(135deg, #B71C1C 0%, #C62828 100%);
-  color: white; box-shadow: 0 2px 8px rgba(183,28,28,.3);
+  color: white;
+  box-shadow: 0 2px 8px rgba(183,28,28,.3);
 }
 .btn-pdf:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(183,28,28,.4); }
-@media print {
-  .pdf-print-mode .header { position: relative !important; }
-  .pdf-print-mode .actions-bar,
-  .pdf-print-mode .progress-bar,
-  .pdf-print-mode .toast,
-  .pdf-print-mode .autosave-bar,
-  .pdf-print-mode .autosave-settings { display: none !important; }
-  .pdf-print-mode .section { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; }
-  .pdf-print-mode .section.collapsed .section-body { max-height: none !important; opacity: 1 !important; padding: 24px !important; }
-  .pdf-print-mode body::before, .pdf-print-mode body::after { display: none !important; }
-}
 
 /* Export overlay */
 .export-overlay {
@@ -986,26 +1007,340 @@ select.form-input {
 .privacy-notice { text-align: center; padding: 20px 40px; font-size: 11px; color: var(--text-light); line-height: 1.6; }
 .privacy-notice strong { color: var(--pine-dark); }
 
-/* ======================= RESPONSIVE ======================= */
-@media (max-width: 768px) {
-  .header-inner { padding: 10px 16px; }
-  .header-badge, .header-since { display: none; }
-  .header-logo { width: 44px; height: 44px; }
-  .main { padding: 10px 16px 100px; }
-  .form-grid { grid-template-columns: 1fr; }
-  .form-grid.cols-3, .form-grid.cols-4 { grid-template-columns: 1fr 1fr; }
-  .limit-grid { grid-template-columns: repeat(3, 1fr); }
-  .passbook-grid { grid-template-columns: 1fr; }
-  .signature-grid { grid-template-columns: 1fr; }
-  .progress-label { display: none; }
+/* ======================= ID PHOTO CAPTURE ======================= */
+.id-photo-section {
+  background: linear-gradient(135deg, var(--pine-tint) 0%, #FAFCFA 100%);
+  border: 2px dashed var(--pine-light);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+  transition: border-color var(--tr), background var(--tr);
 }
+.id-photo-section:hover { border-color: var(--pine); }
+.id-photo-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 18px;
+}
+.id-photo-header-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--pine-dark), var(--pine));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.id-photo-header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px; font-weight: 600; color: var(--pine-dark);
+}
+.id-photo-header-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.id-photo-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 768px) { .id-photo-slots { grid-template-columns: 1fr; } }
+.id-photo-slot {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--tr), border-color var(--tr);
+  position: relative;
+}
+.id-photo-slot:hover { box-shadow: var(--shadow-md); border-color: var(--pine-light); }
+.id-photo-slot-label {
+  background: linear-gradient(135deg, var(--pine-dark), var(--pine));
+  color: white;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .5px; text-transform: uppercase;
+  padding: 8px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.id-photo-slot-label .slot-badge {
+  background: rgba(255,255,255,.15);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 9px;
+}
+.id-photo-preview {
+  width: 100%;
+  aspect-ratio: 4/3;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  background: var(--pine-tint);
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.id-photo-preview img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+}
+.id-photo-preview.has-photo img { display: block; }
+.id-photo-preview.has-photo .photo-placeholder { display: none; }
+.photo-placeholder {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  color: var(--text-light);
+}
+.photo-placeholder-icon { font-size: 32px; opacity: .5; }
+.photo-placeholder-text { font-size: 11px; text-align: center; opacity: .7; }
+.id-photo-actions {
+  padding: 10px 12px;
+  display: flex; gap: 8px;
+  border-top: 1px solid var(--border-light);
+  background: white;
+  flex-wrap: wrap;
+}
+.photo-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: white;
+  color: var(--text-mid);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: all .2s ease;
+  white-space: nowrap;
+  font-family: 'Source Sans 3', sans-serif;
+}
+.photo-btn:hover { border-color: var(--pine); background: var(--pine-ghost); color: var(--pine-dark); }
+.photo-btn:active { transform: scale(0.95); }
+.photo-btn.primary { background: var(--pine); border-color: var(--pine); color: white; }
+.photo-btn.primary:hover { background: var(--pine-mid); border-color: var(--pine-mid); color: white; }
+.photo-btn.danger { border-color: var(--red); color: var(--red); }
+.photo-btn.danger:hover { background: var(--red-light); }
+.photo-remove-overlay {
+  position: absolute; top: 6px; right: 6px;
+  width: 26px; height: 26px;
+  background: rgba(0,0,0,.55);
+  border-radius: 50%;
+  border: none; cursor: pointer;
+  display: none; align-items: center; justify-content: center;
+  color: white; font-size: 13px;
+  transition: background .2s;
+}
+.id-photo-preview.has-photo:hover .photo-remove-overlay { display: flex; }
+.photo-remove-overlay:hover { background: rgba(198,40,40,.8); }
+
+/* Camera modal */
+.camera-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(8px);
+  z-index: 9998;
+  display: none; align-items: center; justify-content: center;
+}
+.camera-modal-overlay.open { display: flex; }
+.camera-modal {
+  background: var(--pine-darkest);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  width: min(680px, 95vw);
+  box-shadow: 0 24px 64px rgba(0,0,0,.6);
+  animation: modalIn .3s var(--ease);
+}
+.camera-modal-header {
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.camera-modal-title {
+  font-family: 'Playfair Display', serif;
+  color: white; font-size: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.camera-modal-close {
+  width: 32px; height: 32px;
+  border-radius: 8px; border: none;
+  background: rgba(255,255,255,.1);
+  color: white; font-size: 18px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+.camera-modal-close:hover { background: rgba(198,40,40,.7); }
+.camera-video-wrap {
+  position: relative;
+  background: #000;
+  display: flex; align-items: center; justify-content: center;
+}
+#cameraVideo {
+  width: 100%;
+  max-height: 380px;
+  display: block;
+  object-fit: cover;
+}
+.camera-guide {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .3s ease;
+}
+.camera-guide-portrait {
+  padding: 10% 30%;
+}
+.camera-guide-card {
+  padding: 15% 8%;
+}
+.camera-guide.hidden { opacity: 0; pointer-events: none; }
+.camera-modal-footer {
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap;
+}
+.camera-slot-label {
+  font-size: 12px; color: rgba(255,255,255,.6);
+  font-family: 'JetBrains Mono', monospace;
+}
+.camera-slot-name {
+  font-size: 14px; color: var(--gold-light); font-weight: 600;
+}
+.camera-capture-btn {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 4px solid white;
+  background: white;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  transition: all .2s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  position: relative;
+}
+.camera-capture-btn::after {
+  content: '';
+  position: absolute; inset: 4px;
+  border-radius: 50%;
+  background: var(--pine);
+  transition: background .2s;
+}
+.camera-capture-btn:hover::after { background: var(--pine-bright); }
+.camera-capture-btn:active { transform: scale(0.92); }
+.camera-flash {
+  position: absolute; inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .05s ease;
+}
+.camera-flash.flash { opacity: 0.8; }
+#cameraCanvas { display: none; }
+
+/* Photo in profile section */
+.profile-photo-display {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+.profile-photo-box {
+  flex-shrink: 0;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+/* The clickable preview area */
+.profile-capture-area {
+  width: 120px;
+  height: 150px;
+  border-radius: var(--radius);
+  border: 2.5px dashed var(--pine-light);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: border-color var(--tr), box-shadow var(--tr);
+  background: var(--pine-tint);
+}
+.profile-capture-area:hover {
+  border-color: var(--pine);
+  box-shadow: 0 0 0 3px rgba(27,94,48,.1);
+}
+.profile-photo-empty {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; color: var(--text-light);
+  pointer-events: none;
+}
+.profile-photo-empty-icon { font-size: 34px; opacity: .35; }
+.profile-photo-empty-text { font-size: 10px; font-weight: 600; opacity: .55; letter-spacing: .3px; }
+.profile-photo-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.profile-photo-remove {
+  position: absolute; top: 5px; right: 5px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.55);
+  color: white; font-size: 11px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+  z-index: 2;
+}
+.profile-photo-remove:hover { background: rgba(198,40,40,.85); }
+.profile-photo-label {
+  font-size: 9px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .6px; text-align: center;
+}
+.profile-capture-btns {
+  display: flex; gap: 5px; width: 100%;
+}
+.profile-cap-btn {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 11px; font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--pine-light);
+  background: white; color: var(--pine-dark);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  transition: all .2s ease;
+  font-family: 'Source Sans 3', sans-serif;
+  white-space: nowrap;
+}
+.profile-cap-btn:hover {
+  background: var(--pine);
+  border-color: var(--pine);
+  color: white;
+}
+.profile-cap-btn:active { transform: scale(0.93); }
+.profile-form-wrap { flex: 1; min-width: 0; }
+
+/* ======================= PRINT — uses dedicated #printTemplate ======================= */
 @media print {
-  .header { position: relative; }
-  .actions-bar, .progress-bar, .toast, .autosave-bar, .autosave-settings { display: none; }
-  .section { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
-  .section.collapsed .section-body { max-height: none !important; opacity: 1 !important; padding: 24px !important; }
-  body::before, body::after { display: none; }
-  .pdf-watermark { display: block !important; }
+  @page {
+    size: 8.5in 14in portrait;
+    margin: 12.7mm 12.7mm 12.7mm 12.7mm;
+  }
+  /* Hide entire web UI */
+  .header, .main, .actions-bar, .progress-bar,
+  .autosave-bar, .autosave-settings, .toast,
+  .camera-modal-overlay, .export-overlay,
+  body::before, body::after { display: none !important; }
+
+  /* Show only the print template */
+  #printTemplate {
+    display: block !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide photo images when src is empty, show when populated */
+  #printTemplate .pt-photo-img[src=""] { display: none !important; }
+  #printTemplate .pt-photo-img[src]:not([src=""]) { display: block !important; }
+  #printTemplate .pt-id-photo[src=""] { display: none !important; }
+  #printTemplate .pt-id-photo[src]:not([src=""]) { display: block !important; }
+  /* Hide empty placeholders when a real photo is present */
+  #printTemplate .pt-photo-img[src]:not([src=""]) ~ .pt-photo-empty { display: none !important; }
+  #printTemplate .pt-id-photo[src]:not([src=""]) ~ .pt-id-photo-empty { display: none !important; }
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.min.js"></script>
@@ -1013,6 +1348,650 @@ select.form-input {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
+
+<!-- =====================================================================
+     PRINT TEMPLATE — hidden on screen, shown only during print/PDF
+     Matches RBS005a reference format exactly.
+     Populated by buildPrintTemplate() before window.print() is called.
+     ===================================================================== -->
+<div id="printTemplate" style="display:none; font-family: Arial, sans-serif; font-size: 8.5pt; color: #111; width: 100%;">
+<style>
+  #printTemplate {
+    font-family: Arial, sans-serif;
+    font-size: 8pt;
+    color: #111;
+    line-height: 1.25;
+  }
+  #printTemplate .pt-page { width: 100%; }
+
+  /* Header */
+  #printTemplate .pt-header {
+    display: flex; justify-content: center; align-items: flex-start;
+    margin-bottom: 2pt; position: relative;
+  }
+  #printTemplate .pt-title { font-size: 13pt; font-weight: bold; margin: 0; text-align:center; }
+  #printTemplate .pt-subtitle { font-size: 8pt; text-align:center; margin: 1pt 0 0; }
+  #printTemplate .pt-rbs {
+    position: absolute; right: 0; top: 0;
+    font-size: 11pt; font-weight: bold; color: #6B8E23;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  /* Instruction */
+  #printTemplate .pt-instruction { font-size: 7pt; margin-bottom: 2pt; line-height: 1.2; }
+
+  /* Section header bar */
+  #printTemplate .pt-sh {
+    background: #2E5935; color: white; font-weight: bold;
+    font-size: 8pt; letter-spacing: 0.3px; padding: 2pt 6pt; margin: 0;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    page-break-after: avoid; break-after: avoid;
+  }
+
+  /* Section body */
+  #printTemplate .pt-sb {
+    border: 1px solid #999; border-top: none;
+    padding: 2.5pt 5pt; margin-bottom: 2.5pt; overflow: visible;
+  }
+
+  /* Subsection title */
+  #printTemplate .pt-sshead {
+    font-size: 7.5pt; font-weight: bold; color: #2E5935;
+    border-bottom: 1px solid #c8d8c8; margin-bottom: 3pt; padding-bottom: 1pt;
+    margin-top: 4pt;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  #printTemplate .pt-sshead:first-child { margin-top: 0; }
+
+  /* Field */
+  #printTemplate .pt-f { display: inline-block; vertical-align: top; }
+  #printTemplate .pt-u {
+    border-bottom: 1px solid #555; min-height: 10pt;
+    display: block; padding: 0 2pt 0pt; font-size: 8pt;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #printTemplate .pt-lbl {
+    display: block; font-size: 5.5pt; color: #555; font-style: italic;
+    margin-top: 0.5pt; white-space: nowrap;
+  }
+
+  /* Row */
+  #printTemplate .pt-row {
+    display: flex; align-items: flex-end; gap: 4pt;
+    margin-bottom: 2.5pt; flex-wrap: nowrap;
+  }
+  #printTemplate .pt-rl {
+    font-size: 8pt; white-space: nowrap; flex-shrink: 0; padding-bottom: 1pt;
+  }
+  #printTemplate .pt-grow { flex: 1; min-width: 0; }
+
+  /* Two and three column grids */
+  #printTemplate .pt-grid2 { display: flex; gap: 5pt; margin-bottom: 2pt; }
+  #printTemplate .pt-grid2 > * { flex: 1; min-width: 0; }
+  #printTemplate .pt-grid3 { display: flex; gap: 4pt; margin-bottom: 2pt; }
+  #printTemplate .pt-grid3 > * { flex: 1; min-width: 0; }
+  #printTemplate .pt-grid4 { display: flex; gap: 4pt; margin-bottom: 2pt; }
+  #printTemplate .pt-grid4 > * { flex: 1; min-width: 0; }
+
+  /* Profile photo */
+  #printTemplate .pt-profile-row { display: flex; gap: 5pt; align-items: flex-start; }
+  #printTemplate .pt-photo-box { flex-shrink: 0; width: 54pt; text-align: center; }
+  #printTemplate .pt-photo-img { width: 52pt; height: 66pt; border: 1px solid #555; object-fit: cover; display: block; }
+  #printTemplate .pt-photo-empty {
+    width: 52pt; height: 66pt; border: 1px solid #555;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 6pt; color: #999; background: #fafafa; text-align: center;
+  }
+  #printTemplate .pt-photo-cap { font-size: 5.5pt; color: #555; margin-top: 1pt; font-style: italic; text-align:center; }
+  #printTemplate .pt-fields-wrap { flex: 1; min-width: 0; }
+
+  /* Divider */
+  #printTemplate .pt-div { border: none; border-top: 1px solid #ccc; margin: 2pt 0; }
+
+  /* Circle checkbox */
+  #printTemplate .pt-checks { display: flex; flex-wrap: wrap; gap: 1pt 7pt; font-size: 7.5pt; align-items: center; }
+  #printTemplate .pt-ci { display: flex; align-items: center; gap: 2pt; white-space: nowrap; }
+  #printTemplate .pt-circle {
+    width: 7pt; height: 7pt; border-radius: 50%; border: 1px solid #555;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 4pt;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  #printTemplate .pt-circle.on {
+    background: #2E5935; border-color: #2E5935; color: white;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  #printTemplate .pt-circle.on::after { content: '\25CF'; font-size: 4pt; }
+
+  /* ID photo slots */
+  #printTemplate .pt-id-slots { display: flex; gap: 8pt; margin-top: 3pt; page-break-inside: avoid; break-inside: avoid; }
+  #printTemplate .pt-id-slot { flex: 1; border: 1.5px solid #bbb; border-radius: 3pt; padding: 5pt; overflow:hidden; }
+  #printTemplate .pt-id-slot-label {
+    font-size: 8.5pt; font-weight: bold; color: #2E5935;
+    margin-bottom: 3pt; text-transform: uppercase;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  #printTemplate .pt-id-photo { width: 100%; height: 80pt; border: 1px solid #aaa; object-fit: cover; display: block; border-radius: 2pt; }
+  #printTemplate .pt-id-photo-empty {
+    width: 100%; height: 80pt; border: 1.5px dashed #ccc;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 3pt; font-size: 8pt; color: #ccc;
+    background: #fafafa; border-radius: 2pt;
+  }
+  #printTemplate .pt-id-fields { display: flex; gap: 3pt; margin-top: 4pt; }
+  #printTemplate .pt-id-fields .pt-f { flex: 1; }
+
+  /* Social media table */
+  #printTemplate .pt-sm-table { width: 100%; border-collapse: collapse; font-size: 7pt; margin-bottom: 3pt; }
+  #printTemplate .pt-sm-table th { background: #2E5935; color: white; padding: 1.5pt 3pt; text-align: left; font-size: 6.5pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #printTemplate .pt-sm-table td { border: 1px solid #ddd; padding: 1.5pt 3pt; font-size: 6.5pt; }
+  #printTemplate .pt-sm-table tr:nth-child(even) td { background: #f9f9f9; }
+
+  /* Consent block */
+  #printTemplate .pt-consent {
+    font-size: 6.5pt; border: 1px solid #c8d8c8; border-radius: 2pt;
+    padding: 3pt 4pt; background: #f8fbf8; margin-bottom: 2pt;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  #printTemplate .pt-consent p { margin: 0 0 3pt; }
+  #printTemplate .pt-consent-item { display: flex; gap: 3pt; margin-bottom: 1pt; }
+  #printTemplate .pt-consent-num { flex-shrink: 0; font-weight: bold; }
+
+  /* Signature */
+  #printTemplate .pt-sig-row { display: flex; gap: 8pt; margin-top: 3pt; }
+  #printTemplate .pt-sig { flex: 1; text-align: center; position: relative; }
+  #printTemplate .pt-sig-line { border-top: 1px solid #555; margin: 8pt 4pt 1pt; }
+  #printTemplate .pt-sig-lbl { font-size: 6pt; color: #444; }
+  #printTemplate .pt-sig-date { font-size: 6.5pt; margin-top: 2pt; }
+  /* Signature overlay: image sits directly on top of the name */
+  #printTemplate .pt-sig-name-wrap { position: relative; height: 28pt; display: flex; align-items: flex-end; justify-content: center; }
+  #printTemplate .pt-sig-name-wrap .pt-sig-line { position: absolute; bottom: 0; left: 4pt; right: 4pt; margin: 0; border-top: 1px solid #555; }
+  #printTemplate .pt-sig-name-wrap .pt-esig-over { position: absolute; bottom: 0; left: 0; right: 0; max-height: 28pt; width: 100%; object-fit: contain; object-position: bottom center; display: none; z-index: 2; }
+  #printTemplate .pt-sig-name-wrap .pt-esig-name { font-size: 6.5pt; color: #222; text-align: center; position: absolute; bottom: 3pt; left: 0; right: 0; z-index: 1; }
+
+  /* Bank use header */
+  #printTemplate .pt-bank-hdr {
+    text-align: center; font-weight: bold; font-size: 8pt;
+    border: 1px solid #999; padding: 2.5pt; background: #f5f5f5; margin-bottom: 0;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  /* Withdrawal auth box */
+  #printTemplate .pt-wd-box {
+    border: 1px solid #FFD180; border-radius: 2pt; padding: 2pt 4pt;
+    background: #FFFDE7; margin-top: 2pt;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  #printTemplate .pt-wd-title { font-size: 7.5pt; font-weight: bold; color: #E65100; margin-bottom: 2pt; }
+  #printTemplate .pt-wd-limit { font-size: 8pt; font-weight: bold; color: #2E5935; }
+
+  /* Footer */
+  #printTemplate .pt-footer {
+    display: flex; justify-content: space-between; font-size: 6.5pt; color: #555;
+    border-top: 1px solid #bbb; padding-top: 2pt; margin-top: 4pt;
+  }
+
+  /* Page break */
+  #printTemplate .pt-pagebreak { page-break-before: always; break-before: page; padding-top: 3pt; }
+</style>
+
+<div class="pt-page">
+
+  <!-- HEADER -->
+  <div class="pt-header">
+    <div>
+      <div class="pt-title">Customer Information Sheet</div>
+      <div class="pt-subtitle">Individual Account</div>
+    </div>
+    <div class="pt-rbs">RBS005a</div>
+  </div>
+  <div class="pt-instruction"><b>Instruction:</b> Please fill-out all the information in the space provided. Indicate N/A, if not applicable, and countersign all erasures, if any.</div>
+
+  <!-- ══════════════ I. CUSTOMER PROFILE ══════════════ -->
+  <div class="pt-sh">I.&nbsp; CUSTOMER PROFILE</div>
+  <div class="pt-sb">
+    <div class="pt-profile-row">
+      <div class="pt-photo-box">
+        <img class="pt-photo-img" id="ptPhotoImg" src="" alt="">
+        <div class="pt-photo-empty" id="ptPhotoEmpty">2x2<br>Photo</div>
+        <div class="pt-photo-cap">Customer Photo</div>
+      </div>
+      <div class="pt-fields-wrap">
+        <div class="pt-row">
+          <span class="pt-rl">Name</span>
+          <div class="pt-f pt-grow"><span class="pt-u" id="ptLastName">&nbsp;</span><span class="pt-lbl">(Last Name &amp; Suffix)</span></div>
+          <div class="pt-f pt-grow"><span class="pt-u" id="ptFirstName">&nbsp;</span><span class="pt-lbl">(First Name)</span></div>
+          <div class="pt-f" style="width:18%"><span class="pt-u" id="ptMiddleName">&nbsp;</span><span class="pt-lbl">(Middle Name)</span></div>
+          <div class="pt-f" style="width:20%"><span class="pt-u" id="ptCivilStatus">&nbsp;</span><span class="pt-lbl">(Civil Status)</span></div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-f" style="width:22%"><b class="pt-rl" style="display:block">Date of Birth</b><span class="pt-u" id="ptDOB">&nbsp;</span><span class="pt-lbl">(mm/dd/yyyy)</span></div>
+          <div class="pt-f pt-grow"><b class="pt-rl" style="display:block">Place of Birth</b><span class="pt-u" id="ptPOB">&nbsp;</span><span class="pt-lbl">(Municipality/City, Province)</span></div>
+          <div class="pt-f" style="width:12%"><b class="pt-rl" style="display:block">Sex</b><span class="pt-u" id="ptSex">&nbsp;</span><span class="pt-lbl">(M/F)</span></div>
+          <div class="pt-f" style="width:17%"><b class="pt-rl" style="display:block">Nationality</b><span class="pt-u" id="ptNationality">&nbsp;</span><span class="pt-lbl">&nbsp;</span></div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-f" style="width:22%"><b class="pt-rl" style="display:block">Religion</b><span class="pt-u" id="ptReligion">&nbsp;</span><span class="pt-lbl">(optional)</span></div>
+          <div class="pt-f" style="width:20%"><b class="pt-rl" style="display:block">TIN</b><span class="pt-u" id="ptTIN">&nbsp;</span><span class="pt-lbl">(Tax ID No.)</span></div>
+          <div class="pt-f" style="width:20%"><b class="pt-rl" style="display:block">SSS / GSIS</b><span class="pt-u" id="ptSSS">&nbsp;</span><span class="pt-lbl">&nbsp;</span></div>
+          <div class="pt-f" style="width:17%"><b class="pt-rl" style="display:block">No. of Dependents</b><span class="pt-u" id="ptDependents">&nbsp;</span><span class="pt-lbl">&nbsp;</span></div>
+          <div class="pt-f pt-grow"><b class="pt-rl" style="display:block">Mother's Maiden Name</b><span class="pt-u" id="ptMother">&nbsp;</span><span class="pt-lbl">&nbsp;</span></div>
+        </div>
+      </div>
+    </div>
+    <hr class="pt-div">
+    <div class="pt-row">
+      <span class="pt-rl" style="min-width:145pt">Present Address: <input type="checkbox" id="ptSameAddrCB" disabled> Same as permanent</span>
+      <div class="pt-f pt-grow"><span class="pt-u" id="ptPresentAddr">&nbsp;</span><span class="pt-lbl">(Street, Purok, Barangay, Municipality/City, Province, Zip Code)</span></div>
+      <div class="pt-f" style="width:21%"><b class="pt-rl" style="display:block">Mobile Number</b><span class="pt-u" id="ptMobile">&nbsp;</span><span class="pt-lbl">(11 digits)</span></div>
+    </div>
+    <div class="pt-row">
+      <span class="pt-rl" style="min-width:80pt"><b>Permanent Address:</b></span>
+      <div class="pt-f pt-grow"><span class="pt-u" id="ptPermAddr">&nbsp;</span><span class="pt-lbl">(Street, Purok, Barangay, Municipality/City, Province, Zip Code)</span></div>
+      <div class="pt-f" style="width:21%"><b class="pt-rl" style="display:block">Telephone</b><span class="pt-u" id="ptTelephone">&nbsp;</span><span class="pt-lbl">(Landline)</span></div>
+    </div>
+    <div class="pt-row">
+      <div class="pt-f" style="width:45%"><b class="pt-rl" style="display:block">E-mail Address</b><span class="pt-u" id="ptEmail">&nbsp;</span><span class="pt-lbl">(Primary e-mail)</span></div>
+      <div class="pt-f pt-grow"><b class="pt-rl" style="display:block">Alternative E-mail</b><span class="pt-u" id="ptAltEmail">&nbsp;</span><span class="pt-lbl">&nbsp;</span></div>
+    </div>
+    <hr class="pt-div">
+    <div class="pt-sshead">Spouse Information (if married)</div>
+    <div class="pt-row">
+      <span class="pt-rl">Spouse' Name</span>
+      <div class="pt-f pt-grow"><span class="pt-u" id="ptSpouseLast">&nbsp;</span><span class="pt-lbl">(Last Name &amp; Suffix)</span></div>
+      <div class="pt-f pt-grow"><span class="pt-u" id="ptSpouseFirst">&nbsp;</span><span class="pt-lbl">(First Name)</span></div>
+      <div class="pt-f" style="width:18%"><span class="pt-u" id="ptSpouseMiddle">&nbsp;</span><span class="pt-lbl">(Middle Name)</span></div>
+      <div class="pt-f" style="width:21%"><b class="pt-rl" style="display:block">Mobile</b><span class="pt-u" id="ptSpouseMobile">&nbsp;</span><span class="pt-lbl">(11 digits)</span></div>
+    </div>
+    <div class="pt-grid4">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Date of Birth</b><span class="pt-u" id="ptSpouseDOB">&nbsp;</span><span class="pt-lbl">(mm/dd/yyyy)</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Occupation</b><span class="pt-u" id="ptSpouseOccupation">&nbsp;</span><span class="pt-lbl">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Employer/Business</b><span class="pt-u" id="ptSpouseEmployer">&nbsp;</span><span class="pt-lbl">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Monthly Income</b><span class="pt-u" id="ptSpouseIncome">&nbsp;</span><span class="pt-lbl">&nbsp;</span></div>
+    </div>
+    <hr class="pt-div">
+    <div class="pt-sshead">PEP Declaration</div>
+    <div class="pt-grid2">
+      <div>
+        <div style="font-size:7.5pt; margin-bottom:2pt">Hold a prominent public position?&nbsp;
+          <span class="pt-ci" style="display:inline-flex"><span class="pt-circle" id="ptPep1Yes"></span> Yes</span>&nbsp;
+          <span class="pt-ci" style="display:inline-flex"><span class="pt-circle" id="ptPep1No"></span> No</span>
+        </div>
+        <div class="pt-f" style="width:100%"><span class="pt-u" id="ptPep1Pos">&nbsp;</span><span class="pt-lbl">(If yes, indicate position)</span></div>
+      </div>
+      <div>
+        <div style="font-size:7.5pt; margin-bottom:2pt">Family member holds public position?&nbsp;
+          <span class="pt-ci" style="display:inline-flex"><span class="pt-circle" id="ptPep2Yes"></span> Yes</span>&nbsp;
+          <span class="pt-ci" style="display:inline-flex"><span class="pt-circle" id="ptPep2No"></span> No</span>
+        </div>
+        <div class="pt-f" style="width:100%"><span class="pt-u" id="ptPep2Detail">&nbsp;</span><span class="pt-lbl">(If yes, full name &amp; position)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ II. SAVINGS INFORMATION ══════════════ -->
+  <div class="pt-sh">II.&nbsp; SAVINGS INFORMATION</div>
+  <div class="pt-sb">
+    <div class="pt-grid2" style="margin-bottom:3pt">
+      <div>
+        <div style="font-size:7.5pt; margin-bottom:2pt">Type of Savings:</div>
+        <div class="pt-checks">
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_basic"></span> Basic Deposit</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_regular"></span> Regular Savings</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_special"></span> Special Savings</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_time"></span> Time Deposit</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:7.5pt; margin-bottom:2pt">Mode of Delivery of SOA &amp; Notices:</div>
+        <div class="pt-checks">
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_electronic"></span> Electronic</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_postal"></span> Postal/Courier</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_otc"></span> Over the Counter</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_socmed"></span> Social Media</div>
+        </div>
+      </div>
+    </div>
+    <hr class="pt-div">
+    <div class="pt-row">
+      <span class="pt-rl" style="min-width:105pt">Purpose of Account Opening</span>
+      <span>:</span>
+      <div class="pt-f pt-grow"><span class="pt-u" id="ptPurpose">&nbsp;</span></div>
+    </div>
+    <div class="pt-grid3">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Initial Deposit</b><span class="pt-u" id="ptInitDeposit">&nbsp;</span><span class="pt-lbl">(PHP)</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Est. Transactions/Month</b><span class="pt-u" id="ptVolume">&nbsp;</span></div>
+      <div class="pt-f">
+        <b class="pt-rl" style="display:block">Passbook / e-SOA Preference</b>
+        <div class="pt-checks" style="margin-top:1pt">
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_pbA"></span> A: Physical Passbook</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_pbB"></span> B: Passbook + e-SOA</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_pbC"></span> C: e-SOA Only</div>
+        </div>
+      </div>
+    </div>
+    <div class="pt-grid3">
+      <div class="pt-f"><b class="pt-rl" style="display:block">e-SOA E-mail</b><span class="pt-u" id="ptESOAEmail">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">e-SOA Mobile</b><span class="pt-u" id="ptESOAMobile">&nbsp;</span></div>
+      <div class="pt-f">
+        <b class="pt-rl" style="display:block">e-SOA Frequency</b>
+        <div class="pt-checks" style="margin-top:1pt">
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_freqM"></span> Monthly</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_freqQ"></span> Quarterly</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_freqS"></span> Semi-Annual</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_freqA"></span> Annual</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_freqR"></span> On Request</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ III. FINANCIAL INFORMATION ══════════════ -->
+  <div class="pt-sh">III.&nbsp; FINANCIAL INFORMATION</div>
+  <div class="pt-sb">
+    <div class="pt-row">
+      <span class="pt-rl" style="min-width:70pt">Source of Fund</span>
+      <span>:</span>
+      <div class="pt-checks" style="flex:1">
+        <div class="pt-ci"><span class="pt-circle" id="ptCB_employment"></span> Employment</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptCB_pension"></span> Pension</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptCB_allowance"></span> Allowance</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptCB_business"></span> Business</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptCB_ofw"></span> Remittance (OFW)</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptCB_others_sof"></span> Others: <span class="pt-u" id="ptSOFOther" style="min-width:50pt; display:inline-block">&nbsp;</span></div>
+      </div>
+    </div>
+    <div class="pt-grid4">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Employer / Business</b><span class="pt-u" id="ptEmployer">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Nature of Work (PSIC)</b><span class="pt-u" id="ptNatureOfWork">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Monthly Income</b><span class="pt-u" id="ptMonthlyIncome">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Contact Info</b><span class="pt-u" id="ptContactInfo">&nbsp;</span><span class="pt-lbl">(Mobile / Email)</span></div>
+    </div>
+    <div class="pt-row">
+      <span class="pt-rl" style="min-width:70pt">Employer Address</span>
+      <span>:</span>
+      <div class="pt-f pt-grow"><span class="pt-u" id="ptEmployerAddr">&nbsp;</span><span class="pt-lbl">(Street, Purok, Barangay, Municipality/City, Province, Zip Code)</span></div>
+    </div>
+    <div class="pt-row">
+      <span class="pt-rl" style="min-width:70pt">Other Income Source</span>
+      <span>:</span>
+      <div class="pt-f pt-grow"><span class="pt-u" id="ptOtherIncome">&nbsp;</span></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ IV. PROOF OF IDENTIFICATION ══════════════ -->
+  <div class="pt-sh">IV.&nbsp; PROOF OF IDENTIFICATION</div>
+  <div class="pt-sb">
+    <div class="pt-id-slots" style="page-break-inside:avoid; break-inside:avoid">
+      <div class="pt-id-slot">
+        <div class="pt-id-slot-label">Primary ID:</div>
+        <img class="pt-id-photo" id="ptIDPhoto0" src="" alt="">
+        <div class="pt-id-photo-empty" id="ptIDPhotoEmpty0">🪪<br>No photo</div>
+        <div class="pt-id-fields">
+          <div class="pt-f" style="flex:1.5"><span class="pt-u" id="ptID0Issuer">&nbsp;</span><span class="pt-lbl">(Name of Issuer)</span></div>
+          <div class="pt-f" style="flex:1.5"><span class="pt-u" id="ptID0Num">&nbsp;</span><span class="pt-lbl">(ID No.)</span></div>
+          <div class="pt-f" style="flex:1"><span class="pt-u" id="ptID0Place">&nbsp;</span><span class="pt-lbl">(Place Issued)</span></div>
+          <div class="pt-f" style="flex:1.2"><span class="pt-u" id="ptID0Date">&nbsp;</span><span class="pt-lbl">(Date / Expiry)</span></div>
+        </div>
+      </div>
+      <div class="pt-id-slot">
+        <div class="pt-id-slot-label">Secondary ID:</div>
+        <img class="pt-id-photo" id="ptIDPhoto1" src="" alt="">
+        <div class="pt-id-photo-empty" id="ptIDPhotoEmpty1">🪪<br>No photo</div>
+        <div class="pt-id-fields">
+          <div class="pt-f" style="flex:1.5"><span class="pt-u" id="ptID1Issuer">&nbsp;</span><span class="pt-lbl">(Name of Issuer)</span></div>
+          <div class="pt-f" style="flex:1.5"><span class="pt-u" id="ptID1Num">&nbsp;</span><span class="pt-lbl">(ID No.)</span></div>
+          <div class="pt-f" style="flex:1"><span class="pt-u" id="ptID1Place">&nbsp;</span><span class="pt-lbl">(Place Issued)</span></div>
+          <div class="pt-f" style="flex:1.2"><span class="pt-u" id="ptID1Date">&nbsp;</span><span class="pt-lbl">(Date / Expiry)</span></div>
+        </div>
+      </div>
+      <div class="pt-id-slot">
+        <div class="pt-id-slot-label">Additional ID:</div>
+        <img class="pt-id-photo" id="ptIDPhoto2" src="" alt="">
+        <div class="pt-id-photo-empty" id="ptIDPhotoEmpty2">🪪<br>No photo</div>
+        <div class="pt-id-fields">
+          <div class="pt-f" style="flex:1.5"><span class="pt-u" id="ptID2Issuer">&nbsp;</span><span class="pt-lbl">(Name of Issuer)</span></div>
+          <div class="pt-f" style="flex:1.5"><span class="pt-u" id="ptID2Num">&nbsp;</span><span class="pt-lbl">(ID No.)</span></div>
+          <div class="pt-f" style="flex:1"><span class="pt-u" id="ptID2Place">&nbsp;</span><span class="pt-lbl">(Place Issued)</span></div>
+          <div class="pt-f" style="flex:1.2"><span class="pt-u" id="ptID2Date">&nbsp;</span><span class="pt-lbl">(Date / Expiry)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════ V. SOCIAL MEDIA ══════════════ -->
+  <div class="pt-sh">V.&nbsp; SOCIAL MEDIA &amp; DIGITAL COMMUNICATION ACCOUNTS</div>
+  <div class="pt-sb">
+    <table class="pt-sm-table" id="ptSMTable">
+      <thead><tr><th>Platform</th><th>Account Name / URL</th><th>Registered Contact</th><th>Status</th></tr></thead>
+      <tbody id="ptSMBody">
+        <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      </tbody>
+    </table>
+    <div class="pt-grid2" style="margin-top:2pt">
+      <div>
+        <div style="font-size:7.5pt; font-weight:bold; margin-bottom:2pt; color:#2E5935">For Bank Notices:</div>
+        <div class="pt-checks">
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_notEmail"></span> E-mail</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_notSMS"></span> SMS</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_notMsg"></span> Messenger</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_notViber"></span> Viber</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_notWA"></span> WhatsApp</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:7.5pt; font-weight:bold; margin-bottom:2pt; color:#2E5935">For Promotional:</div>
+        <div class="pt-checks">
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_proEmail"></span> E-mail</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_proSMS"></span> SMS</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_proMsg"></span> Messenger</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_proViber"></span> Viber</div>
+          <div class="pt-ci"><span class="pt-circle" id="ptCB_proWA"></span> WhatsApp</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ VI. CONTACT PERSON — PAGE 2 ══════════════ -->
+  <div style="page-break-before:always; break-before:page; padding-top:0">
+  <div class="pt-header" style="margin-bottom:2pt">
+    <div><div class="pt-title" style="font-size:10pt">Customer Information Sheet</div><div class="pt-subtitle">Individual Account — continued</div></div>
+    <div class="pt-rbs" style="font-size:9pt">RBS005a</div>
+  </div>
+  </div>
+  <div class="pt-sh">VI.&nbsp; CONTACT PERSON / AUTHORIZED REPRESENTATIVE</div>
+  <div class="pt-sb">
+    <!-- CP1 -->
+    <div class="pt-sshead">Contact Person / Authorized Representative No. 1</div>
+    <div class="pt-grid4">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Last Name &amp; Suffix</b><span class="pt-u" id="ptCP1Last">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">First Name</b><span class="pt-u" id="ptCP1First">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Middle Name</b><span class="pt-u" id="ptCP1Middle">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Relationship</b><span class="pt-u" id="ptCP1Rel">&nbsp;</span></div>
+    </div>
+    <div class="pt-grid4">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Date of Birth</b><span class="pt-u" id="ptCP1DOB">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Sex</b><span class="pt-u" id="ptCP1Sex">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Mobile Number</b><span class="pt-u" id="ptCP1Mobile">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">E-mail</b><span class="pt-u" id="ptCP1Email">&nbsp;</span></div>
+    </div>
+    <div class="pt-row">
+      <span class="pt-rl" style="min-width:70pt"><b>Present Address</b></span>
+      <div class="pt-f pt-grow"><span class="pt-u" id="ptCP1Addr">&nbsp;</span></div>
+    </div>
+    <div class="pt-grid3" style="margin-bottom:2pt">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Facebook</b><span class="pt-u" id="ptCP1FB">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Messenger</b><span class="pt-u" id="ptCP1Msng">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Viber / WhatsApp</b><span class="pt-u" id="ptCP1Viber">&nbsp;</span></div>
+    </div>
+    <div style="font-size:7.5pt; margin-bottom:1.5pt"><b>Scope of Authorization:</b></div>
+    <div class="pt-checks" id="ptCP1Scope" style="flex-direction:column; gap:1pt; align-items:flex-start">
+      <div class="pt-ci"><span class="pt-circle" id="ptCP1S1"></span> Receive bank notices, advisories, and account statements</div>
+      <div class="pt-ci"><span class="pt-circle" id="ptCP1S2"></span> Accept electronic mail on behalf of account holder</div>
+      <div class="pt-ci"><span class="pt-circle" id="ptCP1S3"></span> Receive messages via social media / messaging platforms</div>
+      <div class="pt-ci"><span class="pt-circle" id="ptCP1S4"></span> Accept physical letters via postal mail or courier</div>
+      <div class="pt-ci"><span class="pt-circle" id="ptCP1S5"></span> Receive SMS notifications and alerts</div>
+      <div class="pt-ci"><span class="pt-circle" id="ptCP1S6"></span> Act as primary contact when account holder is unreachable</div>
+    </div>
+    <div class="pt-wd-box">
+      <div class="pt-wd-title">⚠ Authorized Withdrawal Privilege — Contact Person No. 1</div>
+      <div class="pt-checks" style="margin-bottom:2pt">
+        <div class="pt-ci"><span class="pt-circle" id="ptWD1Yes"></span> <b>YES</b> — Authorize withdrawals</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptWD1No"></span> <b>NO</b> — Not authorized</div>
+      </div>
+      <div style="font-size:7pt">Maximum Single Withdrawal: <span class="pt-wd-limit" id="ptWD1Limit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+    </div>
+
+    <hr class="pt-div" style="margin:3pt 0">
+
+    <!-- CP2 -->
+    <div class="pt-sshead">Contact Person No. 2 (Optional)</div>
+    <div class="pt-grid4">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Last Name &amp; Suffix</b><span class="pt-u" id="ptCP2Last">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">First Name</b><span class="pt-u" id="ptCP2First">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Middle Name</b><span class="pt-u" id="ptCP2Middle">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Relationship</b><span class="pt-u" id="ptCP2Rel">&nbsp;</span></div>
+    </div>
+    <div class="pt-grid4">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Mobile Number</b><span class="pt-u" id="ptCP2Mobile">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">E-mail</b><span class="pt-u" id="ptCP2Email">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Facebook / Messenger</b><span class="pt-u" id="ptCP2FB">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Viber / WhatsApp</b><span class="pt-u" id="ptCP2Viber">&nbsp;</span></div>
+    </div>
+    <div style="font-size:7.5pt; margin-bottom:1.5pt"><b>Scope of Authorization:</b></div>
+    <div class="pt-checks" style="flex-direction:column; gap:1pt; align-items:flex-start">
+      <div class="pt-ci"><span class="pt-circle" id="ptCP2S1"></span> Receive bank notices and statements</div>
+      <div class="pt-ci"><span class="pt-circle" id="ptCP2S2"></span> Accept e-mail on behalf of the account holder</div>
+      <div class="pt-ci"><span class="pt-circle" id="ptCP2S3"></span> Receive messages via social media / messaging platforms</div>
+      <div class="pt-ci"><span class="pt-circle" id="ptCP2S4"></span> Accept physical letters and courier documents</div>
+    </div>
+    <div class="pt-wd-box">
+      <div class="pt-wd-title">⚠ Authorized Withdrawal Privilege — Contact Person No. 2</div>
+      <div class="pt-checks" style="margin-bottom:2pt">
+        <div class="pt-ci"><span class="pt-circle" id="ptWD2Yes"></span> <b>YES</b> — Authorize withdrawals</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptWD2No"></span> <b>NO</b> — Not authorized</div>
+      </div>
+      <div style="font-size:7pt">Maximum Single Withdrawal: <span class="pt-wd-limit" id="ptWD2Limit">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ VII. CONSENT ══════════════ -->
+  <div class="pt-sh">VII.&nbsp; AUTHORIZATION &amp; CONSENT FOR ELECTRONIC / DIGITAL COMMUNICATION</div>
+  <div class="pt-sb">
+    <div class="pt-consent">
+      <p>I, the undersigned, hereby authorize <b>Rural Bank of Calbayog City, Inc. (RBCCI)</b> to communicate with me and/or my authorized contact person(s) through:</p>
+      <div class="pt-checks" style="margin-bottom:3pt; flex-direction:column; gap:1pt; align-items:flex-start">
+        <div class="pt-ci"><span class="pt-circle" id="ptConsentEmail"></span> Electronic Mail (E-mail)</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptConsentSMS"></span> Short Messaging Service (SMS)</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptConsentSocmed"></span> Social Media (Facebook, Messenger, Viber, WhatsApp, Telegram)</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptConsentPostal"></span> Postal Mail / Courier</div>
+        <div class="pt-ci"><span class="pt-circle" id="ptConsentOTC"></span> Over-the-Counter at any RBCCI branch</div>
+      </div>
+      <p style="font-weight:bold; color:#2E5935; margin-bottom:2pt">I understand and agree that:</p>
+      <div class="pt-consent-item"><span class="pt-consent-num">1.</span> Communications sent shall be deemed received upon successful delivery.</div>
+      <div class="pt-consent-item"><span class="pt-consent-num">2.</span> I am responsible for keeping my contact details updated with the bank.</div>
+      <div class="pt-consent-item"><span class="pt-consent-num">3.</span> The bank shall not be liable for delays due to factors beyond its control.</div>
+      <div class="pt-consent-item"><span class="pt-consent-num">4.</span> My authorized contact person(s) are bound by confidentiality obligations.</div>
+      <div class="pt-consent-item"><span class="pt-consent-num">5.</span> This authorization remains in effect until revoked in writing.</div>
+      <div class="pt-consent-item"><span class="pt-consent-num">6.</span> I consent to data processing per R.A. 10173 and BSP regulations.</div>
+    </div>
+    <div class="pt-sig-row" style="page-break-inside:avoid; break-inside:avoid">
+      <div class="pt-sig">
+        <div class="pt-sig-name-wrap">
+          <img id="ptEsigImg0" class="pt-esig-over" src="" alt="">
+          <div class="pt-sig-line" id="ptEsigLine0"></div>
+          <div class="pt-esig-name" id="ptEsigName0"></div>
+        </div>
+        <div class="pt-sig-lbl">Depositor's Signature Over Printed Name</div>
+        <div class="pt-sig-date">Date: _______________</div>
+      </div>
+      <div class="pt-sig">
+        <div class="pt-sig-name-wrap">
+          <img id="ptEsigImg1" class="pt-esig-over" src="" alt="">
+          <div class="pt-sig-line" id="ptEsigLine1"></div>
+          <div class="pt-esig-name" id="ptEsigName1"></div>
+        </div>
+        <div class="pt-sig-lbl">Authorized Contact Person's Signature</div>
+        <div class="pt-sig-date">Date: _______________</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ VIII. BANK USE ONLY ══════════════ -->
+  <div class="pt-bank-hdr" style="page-break-inside:avoid; break-inside:avoid">TO BE FILLED-OUT BY AUTHORIZED PERSONNEL ONLY</div>
+  <div class="pt-sb" style="border-top:1px solid #999; page-break-inside:avoid; break-inside:avoid">
+    <div class="pt-grid4">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Existing Account No. 1</b><span class="pt-u" id="ptAcct1">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Status</b><span class="pt-u" id="ptAcct1Status">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Existing Account No. 2</b><span class="pt-u" id="ptAcct2">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Status</b><span class="pt-u" id="ptAcct2Status">&nbsp;</span></div>
+    </div>
+    <div class="pt-row" style="margin-top:2pt">
+      <span class="pt-rl" style="min-width:150pt">Account opened on behalf of another?</span>
+      <div class="pt-ci"><span class="pt-circle" id="ptBehalfYes"></span> Yes</div>&nbsp;
+      <div class="pt-ci"><span class="pt-circle" id="ptBehalfNo"></span> No</div>
+    </div>
+    <div class="pt-sshead">Beneficial Owner (if applicable)</div>
+    <div class="pt-grid4">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Last Name</b><span class="pt-u" id="ptBOLast">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">First Name</b><span class="pt-u" id="ptBOFirst">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Relationship</b><span class="pt-u" id="ptBORel">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Date of Birth</b><span class="pt-u" id="ptBODOB">&nbsp;</span></div>
+    </div>
+    <div class="pt-grid3">
+      <div class="pt-f" style="flex:2"><b class="pt-rl" style="display:block">Address</b><span class="pt-u" id="ptBOAddr">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Contact</b><span class="pt-u" id="ptBOContact">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Source of Fund</b><span class="pt-u" id="ptBOSOF">&nbsp;</span></div>
+    </div>
+    <div class="pt-sshead">Account Processing</div>
+    <div class="pt-grid4" style="margin-bottom:2pt">
+      <div class="pt-f"><b class="pt-rl" style="display:block">Risk Classification</b><span class="pt-u" id="ptRisk">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Account Number</b><span class="pt-u" id="ptAcctNo">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Date Opened</b><span class="pt-u" id="ptDateOpened">&nbsp;</span></div>
+      <div class="pt-f"><b class="pt-rl" style="display:block">Initial Deposit</b><span class="pt-u" id="ptBankInitDeposit">&nbsp;</span></div>
+    </div>
+    <div class="pt-sig-row" style="page-break-inside:avoid; break-inside:avoid">
+      <div class="pt-sig">
+        <div class="pt-sig-name-wrap">
+          <img id="ptEsigImg2" class="pt-esig-over" src="" alt="">
+          <div class="pt-sig-line" id="ptEsigLine2"></div>
+          <div class="pt-esig-name" id="ptEsigName2"></div>
+        </div>
+        <div class="pt-sig-lbl">Signature over Printed Name of Account Holder / Date</div>
+      </div>
+      <div class="pt-sig">
+        <div class="pt-sig-name-wrap">
+          <img id="ptEsigImg3" class="pt-esig-over" src="" alt="">
+          <div class="pt-sig-line" id="ptEsigLine3"></div>
+          <div class="pt-esig-name" id="ptEsigName3"></div>
+        </div>
+        <div class="pt-sig-lbl">Verified By / Date</div>
+      </div>
+      <div class="pt-sig">
+        <div class="pt-sig-name-wrap">
+          <img id="ptEsigImg4" class="pt-esig-over" src="" alt="">
+          <div class="pt-sig-line" id="ptEsigLine4"></div>
+          <div class="pt-esig-name" id="ptEsigName4"></div>
+        </div>
+        <div class="pt-sig-lbl">Approved By / Date</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:6.5pt; text-align:center; color:#666; margin-top:3pt; border-top:1px solid #eee; padding-top:2pt">
+    <b>DATA PRIVACY NOTICE:</b> Information collected will be processed per the Data Privacy Act of 2012 (R.A. 10173) and applicable BSP circulars.
+  </div>
+
+  <div class="pt-footer">
+    <span>Date Issued: 01 Oct 2024</span>
+    <span>Rev. No.: 3 &nbsp;|&nbsp; Rev. Date: 30 Sept 2024</span>
+  </div>
+
+</div><!-- /pt-page -->
+</div><!-- /printTemplate -->
 
 <!-- HEADER -->
 <header class="header">
@@ -1052,6 +2031,33 @@ select.form-input {
 <div class="section" id="sec-0">
   <div class="section-header" onclick="toggle(this)"><div class="section-num">I</div><div class="section-title">Customer Profile</div><div class="section-toggle">▾</div></div>
   <div class="section-body">
+    <!-- ===== CUSTOMER PROFILE PHOTO — Section I own capture widget ===== -->
+    <div class="profile-photo-display" id="profilePhotoDisplay">
+      <div class="profile-photo-box">
+        <!-- Photo preview area -->
+        <div class="profile-capture-area" id="profileCaptureArea">
+          <div class="profile-photo-empty" id="profilePhotoEmpty">
+            <span class="profile-photo-empty-icon">👤</span>
+            <span class="profile-photo-empty-text">No photo</span>
+          </div>
+          <img class="profile-photo-img" id="profilePhotoImg" style="display:none" alt="Customer Portrait">
+          <button class="profile-photo-remove" id="profilePhotoRemove" onclick="removeProfilePhoto()" title="Remove photo" style="display:none">✕</button>
+        </div>
+        <div class="profile-photo-label">Customer Photo</div>
+        <!-- Capture / Upload buttons -->
+        <div class="profile-capture-btns">
+          <button class="profile-cap-btn" onclick="openProfileCamera()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Camera
+          </button>
+          <button class="profile-cap-btn" onclick="document.getElementById('profilePhotoUpload').click()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload
+          </button>
+        </div>
+        <input type="file" id="profilePhotoUpload" accept="image/*" style="display:none" onchange="handleProfileUpload(event)">
+      </div>
+      <div class="profile-form-wrap">
     <div class="form-grid">
       <div class="form-group"><label class="form-label">Last Name & Suffix <span class="hint">(Sr., Jr., III)</span></label><input class="form-input" placeholder="Enter last name"></div>
       <div class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="Enter first name"></div>
@@ -1068,6 +2074,8 @@ select.form-input {
       <div class="form-group"><label class="form-label">Mother's Maiden Name</label><input class="form-input"></div>
       <div class="form-group"><label class="form-label">No. of Dependents</label><input class="form-input" type="number" placeholder="0"></div>
     </div>
+      </div><!-- /profile-form-wrap -->
+    </div><!-- /profile-photo-display -->
     <div class="subsection"><div class="subsection-title">Present Address</div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Street / Purok</label><input class="form-input"></div>
@@ -1174,6 +2182,75 @@ select.form-input {
 <div class="section" id="sec-3">
   <div class="section-header" onclick="toggle(this)"><div class="section-num">IV</div><div class="section-title">Proof of Identification</div><div class="section-toggle">▾</div></div>
   <div class="section-body">
+
+    <!-- ===== PHOTO CAPTURE PANEL ===== -->
+    <div class="id-photo-section">
+      <div class="id-photo-header">
+        <div class="id-photo-header-icon">📸</div>
+        <div>
+          <div class="id-photo-header-title">ID Photo Capture</div>
+          <div class="id-photo-header-sub">Capture or upload photos of identification documents. Photos will appear on the printed/PDF output at the top of the Customer Profile section.</div>
+        </div>
+      </div>
+      <div class="id-photo-slots">
+
+        <!-- Slot 1: Primary ID -->
+        <div class="id-photo-slot" id="photoSlot0">
+          <div class="id-photo-slot-label">Primary ID <span class="slot-badge">Required</span></div>
+          <div class="id-photo-preview" id="photoPreview0">
+            <div class="photo-placeholder">
+              <div class="photo-placeholder-icon">🪪</div>
+              <div class="photo-placeholder-text">No photo yet<br>Camera or upload</div>
+            </div>
+            <img id="photoImg0" alt="Primary ID Photo">
+            <button class="photo-remove-overlay" onclick="removePhoto(0)" title="Remove photo">✕</button>
+          </div>
+          <div class="id-photo-actions">
+            <button class="photo-btn primary" onclick="openCamera(0)">📷 Camera</button>
+            <button class="photo-btn" onclick="triggerUpload(0)">📁 Upload</button>
+          </div>
+          <input type="file" id="photoUpload0" accept="image/*" style="display:none" onchange="handleUpload(event,0)">
+        </div>
+
+        <!-- Slot 2: Secondary ID -->
+        <div class="id-photo-slot" id="photoSlot1">
+          <div class="id-photo-slot-label">Secondary ID <span class="slot-badge">Optional</span></div>
+          <div class="id-photo-preview" id="photoPreview1">
+            <div class="photo-placeholder">
+              <div class="photo-placeholder-icon">🪪</div>
+              <div class="photo-placeholder-text">No photo yet<br>Camera or upload</div>
+            </div>
+            <img id="photoImg1" alt="Secondary ID Photo">
+            <button class="photo-remove-overlay" onclick="removePhoto(1)" title="Remove photo">✕</button>
+          </div>
+          <div class="id-photo-actions">
+            <button class="photo-btn primary" onclick="openCamera(1)">📷 Camera</button>
+            <button class="photo-btn" onclick="triggerUpload(1)">📁 Upload</button>
+          </div>
+          <input type="file" id="photoUpload1" accept="image/*" style="display:none" onchange="handleUpload(event,1)">
+        </div>
+
+        <!-- Slot 3: Additional ID -->
+        <div class="id-photo-slot" id="photoSlot2">
+          <div class="id-photo-slot-label">Additional ID <span class="slot-badge">Optional</span></div>
+          <div class="id-photo-preview" id="photoPreview2">
+            <div class="photo-placeholder">
+              <div class="photo-placeholder-icon">🪪</div>
+              <div class="photo-placeholder-text">No photo yet<br>Camera or upload</div>
+            </div>
+            <img id="photoImg2" alt="Additional ID Photo">
+            <button class="photo-remove-overlay" onclick="removePhoto(2)" title="Remove photo">✕</button>
+          </div>
+          <div class="id-photo-actions">
+            <button class="photo-btn primary" onclick="openCamera(2)">📷 Camera</button>
+            <button class="photo-btn" onclick="triggerUpload(2)">📁 Upload</button>
+          </div>
+          <input type="file" id="photoUpload2" accept="image/*" style="display:none" onchange="handleUpload(event,2)">
+        </div>
+
+      </div><!-- /id-photo-slots -->
+    </div><!-- /id-photo-section -->
+
     <div class="subsection" style="margin-top:0"><div class="subsection-title">Primary ID</div><div class="form-grid cols-4"><div class="form-group"><label class="form-label">Issuing Authority</label><input class="form-input" placeholder="e.g., PSA, SSS"></div><div class="form-group"><label class="form-label">ID Number</label><input class="form-input"></div><div class="form-group"><label class="form-label">Place Issued</label><input class="form-input"></div><div class="form-group"><label class="form-label">Date / Expiry</label><input class="form-input" placeholder="MM/DD/YYYY"></div></div></div>
     <div class="subsection"><div class="subsection-title">Secondary ID</div><div class="form-grid cols-4"><div class="form-group"><label class="form-label">Issuing Authority</label><input class="form-input"></div><div class="form-group"><label class="form-label">ID Number</label><input class="form-input"></div><div class="form-group"><label class="form-label">Place Issued</label><input class="form-input"></div><div class="form-group"><label class="form-label">Date / Expiry</label><input class="form-input"></div></div></div>
     <div class="subsection"><div class="subsection-title">Additional ID</div><div class="form-grid cols-4"><div class="form-group"><label class="form-label">Issuing Authority</label><input class="form-input"></div><div class="form-group"><label class="form-label">ID Number</label><input class="form-input"></div><div class="form-group"><label class="form-label">Place Issued</label><input class="form-input"></div><div class="form-group"><label class="form-label">Date / Expiry</label><input class="form-input"></div></div></div>
@@ -1314,8 +2391,34 @@ select.form-input {
       <div class="consent-item"><span class="consent-num">6.</span>I consent to data processing per R.A. 10173 and BSP regulations.</div>
     </div>
     <div class="signature-grid">
-      <div class="signature-box"><div class="signature-line"></div><div class="signature-label">Depositor's Signature Over Printed Name</div><div class="signature-date">Date: ________________</div></div>
-      <div class="signature-box"><div class="signature-line"></div><div class="signature-label">Authorized Contact Person's Signature</div><div class="signature-date">Date: ________________</div></div>
+      <!-- E-Signature Pad 0: Depositor -->
+      <div class="signature-box esig-box">
+        <div class="esig-label-top">Depositor's Signature Over Printed Name</div>
+        <div class="esig-pad-wrap">
+          <canvas class="esig-canvas" data-esig="0" width="400" height="120"></canvas>
+          <div class="esig-placeholder" data-esig-ph="0">✍ Sign here</div>
+        </div>
+        <div class="esig-controls">
+          <button class="esig-btn esig-btn-clear" onclick="esigClear(0)">✕ Clear</button>
+          <button class="esig-btn esig-btn-undo" onclick="esigUndo(0)">↩ Undo</button>
+        </div>
+        <input class="esig-name-input" data-esig-name="0" type="text" placeholder="Type printed name here…">
+        <div class="signature-date">Date: ________________</div>
+      </div>
+      <!-- E-Signature Pad 1: Authorized Contact Person -->
+      <div class="signature-box esig-box">
+        <div class="esig-label-top">Authorized Contact Person's Signature</div>
+        <div class="esig-pad-wrap">
+          <canvas class="esig-canvas" data-esig="1" width="400" height="120"></canvas>
+          <div class="esig-placeholder" data-esig-ph="1">✍ Sign here</div>
+        </div>
+        <div class="esig-controls">
+          <button class="esig-btn esig-btn-clear" onclick="esigClear(1)">✕ Clear</button>
+          <button class="esig-btn esig-btn-undo" onclick="esigUndo(1)">↩ Undo</button>
+        </div>
+        <input class="esig-name-input" data-esig-name="1" type="text" placeholder="Type printed name here…">
+        <div class="signature-date">Date: ________________</div>
+      </div>
     </div>
   </div>
 </div>
@@ -1333,8 +2436,51 @@ select.form-input {
     <div class="form-group full" style="margin-top:16px"><label class="form-label">Opened on behalf of another?</label><div class="radio-group" style="margin-top:6px"><label class="radio-item"><input type="radio" name="behalf" value="y"><span class="check-mark">✓</span>Yes</label><label class="radio-item"><input type="radio" name="behalf" value="n"><span class="check-mark">✓</span>No</label></div></div>
     <div class="subsection"><div class="subsection-title">Beneficial Owner (if applicable)</div><div class="form-grid"><div class="form-group"><label class="form-label">Last Name</label><input class="form-input"></div><div class="form-group"><label class="form-label">First Name</label><input class="form-input"></div><div class="form-group"><label class="form-label">Relationship</label><input class="form-input"></div><div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" type="date"></div><div class="form-group full"><label class="form-label">Address</label><input class="form-input"></div><div class="form-group"><label class="form-label">Contact</label><input class="form-input"></div><div class="form-group"><label class="form-label">Source of Fund</label><input class="form-input"></div></div></div>
     <div class="subsection"><div class="subsection-title">Account Processing</div><div class="form-grid"><div class="form-group"><label class="form-label">Risk Classification</label><select class="form-input"><option value="">Select</option><option>Low</option><option>Normal</option><option>High</option></select></div><div class="form-group"><label class="form-label">Account Number</label><input class="form-input"></div><div class="form-group"><label class="form-label">Date Opened</label><input class="form-input" type="date"></div><div class="form-group"><label class="form-label">Initial Deposit</label><input class="form-input" placeholder="₱"></div><div class="form-group"><label class="form-label">Verified By</label><input class="form-input"></div><div class="form-group"><label class="form-label">Approved By</label><input class="form-input"></div></div></div>
-  </div>
-</div>
+    <!-- E-Signature Row: Bank Use Only -->
+    <div class="signature-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 20px;">
+      <!-- E-Signature Pad 2: Account Holder -->
+      <div class="signature-box esig-box">
+        <div class="esig-label-top">Signature over Printed Name of Account Holder</div>
+        <div class="esig-pad-wrap">
+          <canvas class="esig-canvas" data-esig="2" width="400" height="100"></canvas>
+          <div class="esig-placeholder" data-esig-ph="2">✍ Sign here</div>
+        </div>
+        <div class="esig-controls">
+          <button class="esig-btn esig-btn-clear" onclick="esigClear(2)">✕ Clear</button>
+          <button class="esig-btn esig-btn-undo" onclick="esigUndo(2)">↩ Undo</button>
+        </div>
+        <input class="esig-name-input" data-esig-name="2" type="text" placeholder="Type printed name here…">
+        <div class="signature-date">Date: ________________</div>
+      </div>
+      <!-- E-Signature Pad 3: Verified By -->
+      <div class="signature-box esig-box">
+        <div class="esig-label-top">Verified By</div>
+        <div class="esig-pad-wrap">
+          <canvas class="esig-canvas" data-esig="3" width="400" height="100"></canvas>
+          <div class="esig-placeholder" data-esig-ph="3">✍ Sign here</div>
+        </div>
+        <div class="esig-controls">
+          <button class="esig-btn esig-btn-clear" onclick="esigClear(3)">✕ Clear</button>
+          <button class="esig-btn esig-btn-undo" onclick="esigUndo(3)">↩ Undo</button>
+        </div>
+        <input class="esig-name-input" data-esig-name="3" type="text" placeholder="Type printed name here…">
+        <div class="signature-date">Date: ________________</div>
+      </div>
+      <!-- E-Signature Pad 4: Approved By -->
+      <div class="signature-box esig-box">
+        <div class="esig-label-top">Approved By</div>
+        <div class="esig-pad-wrap">
+          <canvas class="esig-canvas" data-esig="4" width="400" height="100"></canvas>
+          <div class="esig-placeholder" data-esig-ph="4">✍ Sign here</div>
+        </div>
+        <div class="esig-controls">
+          <button class="esig-btn esig-btn-clear" onclick="esigClear(4)">✕ Clear</button>
+          <button class="esig-btn esig-btn-undo" onclick="esigUndo(4)">↩ Undo</button>
+        </div>
+        <input class="esig-name-input" data-esig-name="4" type="text" placeholder="Type printed name here…">
+        <div class="signature-date">Date: ________________</div>
+      </div>
+    </div>
 
 <div class="privacy-notice"><strong>DATA PRIVACY NOTICE</strong><br>Information collected will be processed per the Data Privacy Act of 2012 (R.A. 10173) and applicable BSP circulars.</div>
 </main>
@@ -1350,6 +2496,48 @@ select.form-input {
   <button class="btn btn-sheets" id="btnSheets" onclick="submitToSheets()">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="margin-right:6px;vertical-align:middle"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>Submit to Sheets
   </button>
+</div>
+
+<!-- Unified Camera Modal — serves both Profile Portrait & ID Document capture -->
+<div class="camera-modal-overlay" id="cameraModalOverlay">
+  <div class="camera-modal">
+    <div class="camera-modal-header">
+      <div class="camera-modal-title">
+        <span id="cameraModalIcon">📷</span>
+        <span id="cameraModalTitle">Capture Photo</span>
+      </div>
+      <button class="camera-modal-close" onclick="closeCamera()">✕</button>
+    </div>
+    <div class="camera-video-wrap">
+      <video id="cameraVideo" autoplay playsinline muted></video>
+      <!-- Portrait guide (oval) — shown for profile photo -->
+      <div class="camera-guide camera-guide-portrait" id="cameraGuidePortrait">
+        <svg viewBox="0 0 200 260" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="100" cy="110" rx="70" ry="90" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-dasharray="8 4"/>
+          <text x="100" y="230" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="12" font-family="sans-serif">Align face here</text>
+        </svg>
+      </div>
+      <!-- Card guide (rect) — shown for ID document photos -->
+      <div class="camera-guide camera-guide-card" id="cameraGuideCard">
+        <svg viewBox="0 0 320 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" width="280" height="160" rx="10" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-dasharray="10 5"/>
+          <text x="160" y="195" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="12" font-family="sans-serif">Place ID card flat within frame</text>
+        </svg>
+      </div>
+      <div class="camera-flash" id="cameraFlash"></div>
+      <canvas id="cameraCanvas"></canvas>
+    </div>
+    <div class="camera-modal-footer">
+      <div>
+        <div class="camera-slot-label" id="cameraSlotLabel">Capturing for:</div>
+        <div class="camera-slot-name" id="cameraSlotName">Profile Photo</div>
+      </div>
+      <button class="camera-capture-btn" onclick="capturePhoto()" title="Take photo"></button>
+      <div style="width:80px; text-align:right">
+        <div style="font-size:11px; color:rgba(255,255,255,.5); line-height:1.4">Press button<br>or Space to capture</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Export progress overlay -->
@@ -1575,57 +2763,874 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.25 });
 document.querySelectorAll('.section').forEach(s => obs.observe(s));
 
-/* ---------- ACTION BUTTONS ---------- */
+/* =================================================================
+   PHOTO CAPTURE SYSTEM — v2
+   Two independent subsystems:
+     A) Profile Portrait  (Section I)  — single face/portrait photo
+     B) ID Documents      (Section IV) — 3 slots: Primary, Secondary, Additional
+   Both share one camera modal but with different guides + labels.
+   ================================================================= */
 
-// Helper: expand all collapsed sections before print/PDF
-function expandAllSections() {
-  document.querySelectorAll('.section.collapsed').forEach(sec => {
-    sec.classList.remove('collapsed');
-    sec._wasCollapsed = true;
-  });
+// ── State ──────────────────────────────────────────────────────────
+let profilePhoto = null;                      // Section I portrait (base64)
+const idPhotos   = [null, null, null];        // Section IV ID doc photos
+const idSlotNames = ['Primary ID', 'Secondary ID', 'Additional ID'];
+
+// Camera shared state
+let cameraStream     = null;
+let cameraMode       = null; // 'profile' | 'id'
+let cameraIdSlot     = 0;    // which ID slot (0‑2) when mode = 'id'
+let cameraCallback   = null; // function(dataUrl) called on capture
+
+// ── Open camera (shared modal) ─────────────────────────────────────
+async function openCameraModal(mode, idSlot = 0) {
+  cameraMode   = mode;
+  cameraIdSlot = idSlot;
+
+  const overlay     = document.getElementById('cameraModalOverlay');
+  const titleEl     = document.getElementById('cameraModalTitle');
+  const iconEl      = document.getElementById('cameraModalIcon');
+  const slotNameEl  = document.getElementById('cameraSlotName');
+  const slotLabelEl = document.getElementById('cameraSlotLabel');
+  const guidePort   = document.getElementById('cameraGuidePortrait');
+  const guideCard   = document.getElementById('cameraGuideCard');
+
+  if (mode === 'profile') {
+    titleEl.textContent    = 'Capture Customer Portrait';
+    iconEl.textContent     = '👤';
+    slotLabelEl.textContent = 'Section:';
+    slotNameEl.textContent  = 'I. Customer Profile';
+    guidePort.classList.remove('hidden');
+    guideCard.classList.add('hidden');
+    cameraCallback = (dataUrl) => setProfilePhoto(dataUrl);
+  } else {
+    titleEl.textContent    = 'Capture — ' + idSlotNames[idSlot];
+    iconEl.textContent     = '🪪';
+    slotLabelEl.textContent = 'ID Slot:';
+    slotNameEl.textContent  = idSlotNames[idSlot];
+    guidePort.classList.add('hidden');
+    guideCard.classList.remove('hidden');
+    cameraCallback = (dataUrl) => setIdPhoto(idSlot, dataUrl);
+  }
+
+  overlay.classList.add('open');
+
+  try {
+    // Prefer back camera on mobile for ID docs, front for portrait
+    const facingMode = (mode === 'profile') ? 'user' : 'environment';
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
+    });
+    document.getElementById('cameraVideo').srcObject = cameraStream;
+  } catch (err) {
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      document.getElementById('cameraVideo').srcObject = cameraStream;
+    } catch (e) {
+      closeCamera();
+      toast('⚠️ Camera unavailable — please use Upload instead.');
+    }
+  }
 }
-// Helper: restore collapsed state after print/PDF
-function restoreCollapsed() {
-  document.querySelectorAll('.section').forEach(sec => {
-    if (sec._wasCollapsed) {
-      sec.classList.add('collapsed');
-      delete sec._wasCollapsed;
+
+function closeCamera() {
+  document.getElementById('cameraModalOverlay').classList.remove('open');
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+  }
+  document.getElementById('cameraVideo').srcObject = null;
+  cameraCallback = null;
+}
+
+function capturePhoto() {
+  const video  = document.getElementById('cameraVideo');
+  const canvas = document.getElementById('cameraCanvas');
+  canvas.width  = video.videoWidth  || 640;
+  canvas.height = video.videoHeight || 480;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+  // Flash
+  const flash = document.getElementById('cameraFlash');
+  flash.classList.add('flash');
+  setTimeout(() => flash.classList.remove('flash'), 200);
+
+  setTimeout(() => {
+    if (cameraCallback) cameraCallback(dataUrl);
+    closeCamera();
+    toast('📸 Photo captured!');
+  }, 150);
+}
+
+// Keyboard shortcuts while camera is open
+document.addEventListener('keydown', e => {
+  const open = document.getElementById('cameraModalOverlay').classList.contains('open');
+  if (!open) return;
+  if (e.code === 'Space') { e.preventDefault(); capturePhoto(); }
+  if (e.code === 'Escape') { closeCamera(); }
+});
+
+
+// ── A) PROFILE PORTRAIT — Section I ───────────────────────────────
+
+function openProfileCamera() {
+  openCameraModal('profile');
+}
+
+function handleProfileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    setProfilePhoto(e.target.result);
+    toast('📁 Customer photo uploaded!');
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function setProfilePhoto(dataUrl) {
+  profilePhoto = dataUrl;
+  const img    = document.getElementById('profilePhotoImg');
+  const empty  = document.getElementById('profilePhotoEmpty');
+  const removeBtn = document.getElementById('profilePhotoRemove');
+  img.src = dataUrl;
+  img.style.display    = 'block';
+  empty.style.display  = 'none';
+  removeBtn.style.display = 'flex';
+}
+
+function removeProfilePhoto() {
+  profilePhoto = null;
+  const img    = document.getElementById('profilePhotoImg');
+  const empty  = document.getElementById('profilePhotoEmpty');
+  const removeBtn = document.getElementById('profilePhotoRemove');
+  img.src = '';
+  img.style.display    = 'none';
+  empty.style.display  = 'flex';
+  removeBtn.style.display = 'none';
+  toast('🗑 Customer photo removed');
+}
+
+
+// ── B) ID DOCUMENTS — Section IV ──────────────────────────────────
+
+function openCamera(slot) {
+  openCameraModal('id', slot);
+}
+
+function triggerUpload(slot) {
+  document.getElementById('photoUpload' + slot).click();
+}
+
+function handleUpload(event, slot) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    setIdPhoto(slot, e.target.result);
+    toast('📁 ' + idSlotNames[slot] + ' uploaded!');
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function setIdPhoto(slot, dataUrl) {
+  idPhotos[slot] = dataUrl;
+  const preview = document.getElementById('photoPreview' + slot);
+  const img     = document.getElementById('photoImg' + slot);
+  img.src = dataUrl;
+  preview.classList.add('has-photo');
+}
+
+function removePhoto(slot) {
+  idPhotos[slot] = null;
+  const preview = document.getElementById('photoPreview' + slot);
+  const img     = document.getElementById('photoImg' + slot);
+  img.src = '';
+  preview.classList.remove('has-photo');
+  toast('🗑 ' + idSlotNames[slot] + ' photo removed');
+}
+
+
+// ── E-SIGNATURE PAD (multi-pad, data-esig index) ─────────────────────
+(function() {
+  const pads = {}; // { index: { canvas, ctx, strokes, drawing, currentStroke } }
+
+  function initPad(canvas) {
+    const idx = canvas.getAttribute('data-esig');
+    if (!idx) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width  = Math.round(rect.width  * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth   = 1.8;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    pads[idx] = { canvas, ctx, strokes: [], drawing: false, currentStroke: [] };
+
+    function getPos(e) {
+      const r = canvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    function startDraw(e) {
+      const p = pads[idx]; p.drawing = true; p.currentStroke = [];
+      const pos = getPos(e); p.currentStroke.push(pos);
+      p.ctx.beginPath(); p.ctx.moveTo(pos.x, pos.y);
+      const ph = document.querySelector('[data-esig-ph="'+idx+'"]');
+      if (ph) ph.classList.add('hidden');
+    }
+    function moveDraw(e) {
+      const p = pads[idx]; if (!p.drawing) return;
+      const pos = getPos(e); p.currentStroke.push(pos);
+      p.ctx.lineTo(pos.x, pos.y); p.ctx.stroke();
+      p.ctx.beginPath(); p.ctx.moveTo(pos.x, pos.y);
+    }
+    function endDraw() {
+      const p = pads[idx]; if (!p.drawing) return;
+      p.drawing = false;
+      if (p.currentStroke.length > 1) p.strokes.push([...p.currentStroke]);
+      p.currentStroke = [];
+    }
+    canvas.addEventListener('mousedown',  startDraw);
+    canvas.addEventListener('mousemove',  moveDraw);
+    canvas.addEventListener('mouseup',    endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); startDraw(e.touches[0]); }, { passive: false });
+    canvas.addEventListener('touchmove',  e => { e.preventDefault(); moveDraw(e.touches[0]);  }, { passive: false });
+    canvas.addEventListener('touchend',   e => { e.preventDefault(); endDraw(); },               { passive: false });
+  }
+
+  function redraw(idx) {
+    const p = pads[idx]; if (!p) return;
+    const r = p.canvas.getBoundingClientRect();
+    p.ctx.clearRect(0, 0, r.width, r.height);
+    p.ctx.strokeStyle = '#1a1a2e'; p.ctx.lineWidth = 1.8;
+    p.ctx.lineCap = 'round'; p.ctx.lineJoin = 'round';
+    p.strokes.forEach(stroke => {
+      if (stroke.length < 2) return;
+      p.ctx.beginPath(); p.ctx.moveTo(stroke[0].x, stroke[0].y);
+      for (let i = 1; i < stroke.length; i++) p.ctx.lineTo(stroke[i].x, stroke[i].y);
+      p.ctx.stroke();
+    });
+  }
+
+  window.esigClear = function(idx) {
+    const p = pads[idx]; if (!p) return;
+    p.strokes = [];
+    const r = p.canvas.getBoundingClientRect();
+    p.ctx.clearRect(0, 0, r.width, r.height);
+    const ph = document.querySelector('[data-esig-ph="'+idx+'"]');
+    if (ph) ph.classList.remove('hidden');
+  };
+
+  window.esigUndo = function(idx) {
+    const p = pads[idx]; if (!p || p.strokes.length === 0) return;
+    p.strokes.pop(); redraw(idx);
+    if (p.strokes.length === 0) {
+      const ph = document.querySelector('[data-esig-ph="'+idx+'"]');
+      if (ph) ph.classList.remove('hidden');
+    }
+  };
+
+  window.esigGetDataUrl = function(idx) {
+    const p = pads[idx];
+    if (!p || p.strokes.length === 0) return null;
+    return p.canvas.toDataURL('image/png');
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.esig-canvas').forEach(initPad);
+  });
+})();
+
+
+// ── Export helper ──────────────────────────────────────────────────
+function getPhotoDataUrls() {
+  return {
+    portrait:   profilePhoto,
+    primary:    idPhotos[0],
+    secondary:  idPhotos[1],
+    additional: idPhotos[2],
+  };
+}
+
+/* =================================================================
+   PRINT TEMPLATE BUILDER
+   Reads all form inputs + captured photos and populates #printTemplate
+   to exactly match the RBS005a reference document layout.
+   ================================================================= */
+
+function v(id) {
+  // Get trimmed value of a form input by its closest label text match
+  return '';
+}
+
+function getFieldVal(labelText) {
+  // Find a .form-input whose nearest .form-label contains labelText
+  const labels = document.querySelectorAll('.form-label');
+  for (const lbl of labels) {
+    if (lbl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+      const inp = lbl.closest('.form-group')?.querySelector('.form-input');
+      if (inp) return inp.value.trim();
+    }
+  }
+  return '';
+}
+
+function getSubfieldVal(subsectionTitle, labelText) {
+  // Find within a specific subsection
+  const subs = document.querySelectorAll('.subsection');
+  for (const sub of subs) {
+    const title = sub.querySelector('.subsection-title');
+    if (!title) continue;
+    if (!title.textContent.trim().toLowerCase().includes(subsectionTitle.toLowerCase())) continue;
+    const labels = sub.querySelectorAll('.form-label');
+    for (const lbl of labels) {
+      if (lbl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+        const inp = lbl.closest('.form-group')?.querySelector('.form-input');
+        if (inp) return inp.value.trim();
+      }
+    }
+  }
+  return '';
+}
+
+function isChecked(labelText) {
+  const labels = document.querySelectorAll('.form-label, .checkbox-item, .radio-item');
+  for (const lbl of labels) {
+    if (lbl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+      const cb = lbl.querySelector('input[type=checkbox], input[type=radio]')
+                 || lbl.closest('.checkbox-item, .radio-item')?.querySelector('input');
+      if (cb) return cb.checked;
+    }
+  }
+  return false;
+}
+
+function fill(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = val || '\u00A0'; // nbsp keeps underline visible when empty
+}
+
+function setCircle(id, checked) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('checked', !!checked);
+}
+
+function setIDPhoto(slot, src) {
+  const img = document.getElementById('ptIDPhoto' + slot);
+  const empty = document.getElementById('ptIDPhotoEmpty' + slot);
+  if (src) {
+    img.src = src; img.style.display = 'block';
+    if (empty) empty.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    if (empty) empty.style.display = 'flex';
+  }
+}
+
+function buildPrintTemplate() {
+  /* ── Helpers ── */
+  function fill(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = (val && val.trim()) ? val.trim() : '\u00A0';
+  }
+  function on(id, checked) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('on', !!checked);
+  }
+  function getVal(labelText) {
+    const labels = document.querySelectorAll('.form-label');
+    for (const lbl of labels) {
+      if (lbl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+        const inp = lbl.closest('.form-group')?.querySelector('.form-input');
+        if (inp) return inp.value.trim();
+      }
+    }
+    return '';
+  }
+  function getSubVal(subsectionTitle, labelText) {
+    const subs = document.querySelectorAll('.subsection');
+    for (const sub of subs) {
+      const t = sub.querySelector('.subsection-title');
+      if (!t || !t.textContent.toLowerCase().includes(subsectionTitle.toLowerCase())) continue;
+      const labels = sub.querySelectorAll('.form-label');
+      for (const lbl of labels) {
+        if (lbl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+          const inp = lbl.closest('.form-group')?.querySelector('.form-input');
+          if (inp) return inp.value.trim();
+        }
+      }
+    }
+    return '';
+  }
+  function isChecked(labelText) {
+    const items = document.querySelectorAll('.checkbox-item, .radio-item');
+    for (const item of items) {
+      if (item.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+        const cb = item.querySelector('input');
+        if (cb) return cb.checked;
+      }
+    }
+    return false;
+  }
+  function isCheckedInSub(subTitle, labelText) {
+    const subs = document.querySelectorAll('.subsection, .auth-box, .consent-block, .section-body');
+    for (const sub of subs) {
+      const t = sub.querySelector('.subsection-title, .auth-box-title');
+      if (t && !t.textContent.toLowerCase().includes(subTitle.toLowerCase())) continue;
+      const items = sub.querySelectorAll('.checkbox-item, .radio-item');
+      for (const item of items) {
+        if (item.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+          const cb = item.querySelector('input');
+          if (cb) return cb.checked;
+        }
+      }
+    }
+    return isChecked(labelText);
+  }
+  function getRadioVal(name) {
+    const sel = document.querySelector(`input[name="${name}"]:checked`);
+    return sel ? sel.value : '';
+  }
+  function getNthSectionSubVal(sectionId, subIndex, labelText) {
+    const sec = document.getElementById(sectionId);
+    if (!sec) return '';
+    const subs = sec.querySelectorAll('.subsection');
+    const sub = subs[subIndex];
+    if (!sub) return '';
+    const labels = sub.querySelectorAll('.form-label');
+    for (const lbl of labels) {
+      if (lbl.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+        const inp = lbl.closest('.form-group')?.querySelector('.form-input');
+        if (inp) return inp.value.trim();
+      }
+    }
+    return '';
+  }
+
+  // ── I. CUSTOMER PROFILE ──
+  fill('ptLastName',    getVal('Last Name'));
+  fill('ptFirstName',   getVal('First Name'));
+  fill('ptMiddleName',  getVal('Middle Name'));
+  fill('ptCivilStatus', getVal('Civil Status'));
+  fill('ptDOB',         getVal('Date of Birth'));
+  fill('ptPOB',         getVal('Place of Birth'));
+  fill('ptSex',         getVal('Sex'));
+  fill('ptNationality', getVal('Nationality'));
+  fill('ptReligion',    getVal('Religion'));
+  fill('ptTIN',         getVal('TIN'));
+  fill('ptSSS',         getVal('SSS'));
+  fill('ptDependents',  getVal('Dependents'));
+  fill('ptMother',      getVal("Mother's Maiden"));
+
+  // Addresses
+  const pS = getSubVal('Present Address','Street');
+  const pB = getSubVal('Present Address','Barangay');
+  const pC = getSubVal('Present Address','Municipality');
+  const pP = getSubVal('Present Address','Province');
+  const pZ = getSubVal('Present Address','Zip');
+  fill('ptPresentAddr', [pS,pB,pC,pP,pZ].filter(Boolean).join(', '));
+
+  const xS = getSubVal('Permanent Address','Street');
+  const xB = getSubVal('Permanent Address','Barangay');
+  const xC = getSubVal('Permanent Address','Municipality');
+  const xP = getSubVal('Permanent Address','Province');
+  const xZ = getSubVal('Permanent Address','Zip');
+  fill('ptPermAddr', [xS,xB,xC,xP,xZ].filter(Boolean).join(', '));
+
+  const saCB = document.getElementById('sameAddr');
+  if (saCB) document.getElementById('ptSameAddrCB').checked = saCB.checked;
+
+  fill('ptMobile',    getSubVal('Primary Contact','Mobile'));
+  fill('ptTelephone', getSubVal('Primary Contact','Telephone'));
+  fill('ptEmail',     getSubVal('Primary Contact','E-mail Address'));
+  fill('ptAltEmail',  getSubVal('Primary Contact','Alternative'));
+
+  // Spouse
+  fill('ptSpouseLast',     getSubVal('Spouse','Last Name'));
+  fill('ptSpouseFirst',    getSubVal('Spouse','First Name'));
+  fill('ptSpouseMiddle',   getSubVal('Spouse','Middle Name'));
+  fill('ptSpouseDOB',      getSubVal('Spouse','Date of Birth'));
+  fill('ptSpouseMobile',   getSubVal('Spouse','Mobile'));
+  fill('ptSpouseOccupation',getSubVal('Spouse','Occupation'));
+  fill('ptSpouseEmployer', getSubVal('Spouse','Employer'));
+  fill('ptSpouseIncome',   getSubVal('Spouse','Monthly Income'));
+
+  // PEP
+  const pep1Val = getRadioVal('pep1');
+  on('ptPep1Yes', pep1Val === 'y');
+  on('ptPep1No',  pep1Val === 'n');
+  const pep2Val = getRadioVal('pep2');
+  on('ptPep2Yes', pep2Val === 'y');
+  on('ptPep2No',  pep2Val === 'n');
+  // PEP text inputs (the inputs after the radio group)
+  const pepSub = document.querySelector('.subsection .subsection-title');
+  const pepInputs = document.querySelectorAll('[placeholder="If yes, indicate position"], [placeholder="Full name & position"]');
+  fill('ptPep1Pos',    pepInputs[0] ? pepInputs[0].value : '');
+  fill('ptPep2Detail', pepInputs[1] ? pepInputs[1].value : '');
+
+  // ── II. SAVINGS ──
+  on('ptCB_basic',       isChecked('Basic Deposit'));
+  on('ptCB_regular',     isChecked('Regular Savings'));
+  on('ptCB_special',     isChecked('Special Savings'));
+  on('ptCB_time',        isChecked('Time Deposit'));
+  on('ptCB_electronic',  isChecked('Electronic'));
+  on('ptCB_postal',      isChecked('Postal'));
+  on('ptCB_otc',         isChecked('Over the Counter'));
+  on('ptCB_socmed',      isChecked('Social Media'));
+
+  fill('ptPurpose',    getVal('Purpose of Account'));
+  fill('ptInitDeposit',getVal('Initial Deposit'));
+  fill('ptVolume',     getVal('Est. Transactions'));
+
+  // Passbook preference
+  const sec1 = document.getElementById('sec-1');
+  on('ptCB_pbA', sec1 && !!sec1.querySelector('.passbook-card.selected[onclick*="A"]'));
+  on('ptCB_pbB', sec1 && !!sec1.querySelector('.passbook-card.selected[onclick*="B"]'));
+  on('ptCB_pbC', sec1 && !!sec1.querySelector('.passbook-card.selected[onclick*="C"]'));
+
+  fill('ptESOAEmail',  getVal('E-mail for e-SOA'));
+  fill('ptESOAMobile', getVal('Mobile for SMS'));
+  on('ptCB_freqM', isChecked('Monthly'));
+  on('ptCB_freqQ', isChecked('Quarterly'));
+  on('ptCB_freqS', isChecked('Semi-Annual'));
+  on('ptCB_freqA', isChecked('Annual'));
+  on('ptCB_freqR', isChecked('On Request'));
+
+  // ── III. FINANCIAL ──
+  on('ptCB_employment',  isChecked('Employment'));
+  on('ptCB_pension',     isChecked('Pension'));
+  on('ptCB_allowance',   isChecked('Allowance'));
+  on('ptCB_business',    isChecked('Business'));
+  on('ptCB_ofw',         isChecked('Remittance'));
+  on('ptCB_others_sof',  isChecked('Others'));
+  fill('ptSOFOther',     getVal('Other Income'));
+
+  fill('ptEmployer',      getVal('Employer'));
+  fill('ptNatureOfWork',  getVal('Nature of Work'));
+  fill('ptMonthlyIncome', getVal('Monthly Income'));
+  fill('ptContactInfo',   getVal('Contact Info'));
+  fill('ptEmployerAddr',  getVal('Employer Address'));
+  fill('ptOtherIncome',   getVal('Other Income Source'));
+
+  // ── IV. PROOF OF ID ──
+  fill('ptID0Issuer', getSubVal('Primary ID','Issuing Authority'));
+  fill('ptID0Num',    getSubVal('Primary ID','ID Number'));
+  fill('ptID0Place',  getSubVal('Primary ID','Place Issued'));
+  fill('ptID0Date',   getSubVal('Primary ID','Date'));
+  fill('ptID1Issuer', getSubVal('Secondary ID','Issuing Authority'));
+  fill('ptID1Num',    getSubVal('Secondary ID','ID Number'));
+  fill('ptID1Place',  getSubVal('Secondary ID','Place Issued'));
+  fill('ptID1Date',   getSubVal('Secondary ID','Date'));
+  fill('ptID2Issuer', getSubVal('Additional ID','Issuing Authority'));
+  fill('ptID2Num',    getSubVal('Additional ID','ID Number'));
+  fill('ptID2Place',  getSubVal('Additional ID','Place Issued'));
+  fill('ptID2Date',   getSubVal('Additional ID','Date'));
+
+  // E-Signatures (all 5 pads) — signature overlaid on typed printed name
+  [0,1,2,3,4].forEach(function(i) {
+    const dataUrl  = window.esigGetDataUrl ? window.esigGetDataUrl(i) : null;
+    const nameInput = document.querySelector('[data-esig-name="'+i+'"]');
+    const typedName = nameInput ? nameInput.value.trim() : '';
+    const img    = document.getElementById('ptEsigImg'  + i);
+    const nameOut = document.getElementById('ptEsigName' + i);
+    if (nameOut) nameOut.textContent = typedName;
+    if (img) {
+      if (dataUrl) {
+        img.setAttribute('src', dataUrl);
+        img.style.cssText = 'display:block !important; position:absolute; bottom:0; left:0; right:0; max-height:28pt; width:100%; object-fit:contain; object-position:bottom center; z-index:2;';
+      } else {
+        img.setAttribute('src', '');
+        img.style.cssText = 'display:none';
+      }
     }
   });
+
+  // Photos — explicitly set src AND display style
+  const photos = getPhotoDataUrls();
+  const ptImg = document.getElementById('ptPhotoImg');
+  const ptEmp = document.getElementById('ptPhotoEmpty');
+  if (photos.portrait) {
+    ptImg.setAttribute('src', photos.portrait);
+    ptImg.style.cssText = 'display:block !important';
+    if (ptEmp) ptEmp.style.display = 'none';
+  } else {
+    ptImg.setAttribute('src', '');
+    ptImg.style.cssText = 'display:none';
+    if (ptEmp) ptEmp.style.display = '';
+  }
+  function setIDPhoto(slot, src) {
+    const img = document.getElementById('ptIDPhoto'+slot);
+    const emp = document.getElementById('ptIDPhotoEmpty'+slot);
+    if (src) {
+      img.setAttribute('src', src);
+      img.style.cssText = 'display:block !important';
+      if (emp) emp.style.display = 'none';
+    } else {
+      img.setAttribute('src', '');
+      img.style.cssText = 'display:none';
+      if (emp) emp.style.display = '';
+    }
+  }
+  setIDPhoto(0, photos.primary);
+  setIDPhoto(1, photos.secondary);
+  setIDPhoto(2, photos.additional);
+
+  // ── V. SOCIAL MEDIA ── only show rows with actual data entered
+  const smBody = document.getElementById('smBody');
+  const ptSMBody = document.getElementById('ptSMBody');
+  if (smBody && ptSMBody) {
+    const rows = smBody.querySelectorAll('tr');
+    ptSMBody.innerHTML = '';
+    let filledCount = 0;
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length < 2) return;
+      // Get values from inputs in each cell
+      const vals = Array.from(cells).map(c => {
+        const inp = c.querySelector('input,select');
+        return inp ? inp.value.trim() : c.textContent.trim();
+      });
+      // Only include row if account name (col 1) or contact (col 2) has data
+      const hasData = vals[1] || vals[2];
+      if (hasData) {
+        const tr = document.createElement('tr');
+        vals.slice(0,4).forEach(t => {
+          const td = document.createElement('td');
+          td.textContent = t || '\u00A0';
+          tr.appendChild(td);
+        });
+        ptSMBody.appendChild(tr);
+        filledCount++;
+      }
+    });
+    // Show at least 3 blank rows if nothing filled
+    if (filledCount === 0) {
+      ptSMBody.innerHTML = '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>'.repeat(3);
+    }
+  }
+
+  // Digital channel
+  const sec4 = document.getElementById('sec-4');
+  if (sec4) {
+    const cbs = sec4.querySelectorAll('.checkbox-item');
+    let noticeIdx=0, promoIdx=0;
+    const noticeLabels = ['E-mail','SMS','Messenger','Viber','WhatsApp'];
+    cbs.forEach(cb => {
+      const txt = cb.textContent.trim();
+      noticeLabels.forEach(lbl => {
+        if (txt.includes(lbl)) {
+          const input = cb.querySelector('input');
+          if(input && input.checked) {
+            // first group = notices, second = promo (simple heuristic by order)
+          }
+        }
+      });
+    });
+    // Use generic check by section order
+    const allCBs = sec4.querySelectorAll('input[type=checkbox]');
+    const map = [
+      ['ptCB_notEmail','ptCB_proEmail'],
+      ['ptCB_notSMS','ptCB_proSMS'],
+      ['ptCB_notMsg','ptCB_proMsg'],
+      ['ptCB_notViber','ptCB_proViber'],
+      ['ptCB_notWA','ptCB_proWA']
+    ];
+    const grp1 = [], grp2 = [];
+    allCBs.forEach(cb => {
+      const item = cb.closest('.checkbox-item');
+      if(!item) return;
+      const parent = item.closest('.form-group');
+      if(!parent) return;
+      const lbl = parent.querySelector('.form-label');
+      if(!lbl) return;
+      if(lbl.textContent.includes('Notice')) grp1.push(cb.checked);
+      else if(lbl.textContent.includes('Promo')) grp2.push(cb.checked);
+    });
+    map.forEach((ids, i) => {
+      on(ids[0], grp1[i] || false);
+      on(ids[1], grp2[i] || false);
+    });
+  }
+
+  // ── VI. CONTACT PERSONS ──
+  const sec5 = document.getElementById('sec-5');
+  if (sec5) {
+    const subs = sec5.querySelectorAll('.subsection');
+    // CP1 = subs[0], CP2 = subs[1]
+    function getFromSub(sub, label) {
+      if(!sub) return '';
+      const labels = sub.querySelectorAll('.form-label');
+      for(const l of labels) {
+        if(l.textContent.trim().toLowerCase().includes(label.toLowerCase())) {
+          const inp = l.closest('.form-group')?.querySelector('.form-input');
+          if(inp) return inp.value.trim();
+        }
+      }
+      return '';
+    }
+    const cp1 = subs[0];
+    fill('ptCP1Last',   getFromSub(cp1,'Last Name'));
+    fill('ptCP1First',  getFromSub(cp1,'First Name'));
+    fill('ptCP1Middle', getFromSub(cp1,'Middle Name'));
+    fill('ptCP1Rel',    getFromSub(cp1,'Relationship'));
+    fill('ptCP1DOB',    getFromSub(cp1,'Date of Birth'));
+    fill('ptCP1Sex',    getFromSub(cp1,'Sex'));
+    fill('ptCP1Mobile', getFromSub(cp1,'Mobile Number'));
+    fill('ptCP1Email',  getFromSub(cp1,'E-mail'));
+    fill('ptCP1Addr',   getFromSub(cp1,'Present Address'));
+    fill('ptCP1FB',     getFromSub(cp1,'Facebook'));
+    fill('ptCP1Msng',   getFromSub(cp1,'Messenger'));
+    fill('ptCP1Viber',  getFromSub(cp1,'Viber'));
+
+    // CP1 scope checkboxes
+    if(cp1) {
+      const cp1cbs = cp1.querySelectorAll('.checkbox-item input');
+      on('ptCP1S1', cp1cbs[0]?.checked);
+      on('ptCP1S2', cp1cbs[1]?.checked);
+      on('ptCP1S3', cp1cbs[2]?.checked);
+      on('ptCP1S4', cp1cbs[3]?.checked);
+      on('ptCP1S5', cp1cbs[4]?.checked);
+      on('ptCP1S6', cp1cbs[5]?.checked);
+    }
+
+    // WD1
+    const wd1 = getRadioVal('wd1');
+    on('ptWD1Yes', wd1 === 'yes');
+    on('ptWD1No',  wd1 === 'no' || wd1 === '');
+    const wd1Sel = document.querySelector('#lg1 .limit-card.selected .limit-amount');
+    fill('ptWD1Limit', wd1 === 'yes' && wd1Sel ? wd1Sel.textContent : (wd1 === 'no' ? 'Not authorized' : ''));
+
+    const cp2 = subs[1];
+    fill('ptCP2Last',   getFromSub(cp2,'Last Name'));
+    fill('ptCP2First',  getFromSub(cp2,'First Name'));
+    fill('ptCP2Middle', getFromSub(cp2,'Middle Name'));
+    fill('ptCP2Rel',    getFromSub(cp2,'Relationship'));
+    fill('ptCP2Mobile', getFromSub(cp2,'Mobile Number'));
+    fill('ptCP2Email',  getFromSub(cp2,'E-mail'));
+    fill('ptCP2FB',     getFromSub(cp2,'Facebook'));
+    fill('ptCP2Viber',  getFromSub(cp2,'Viber'));
+
+    if(cp2) {
+      const cp2cbs = cp2.querySelectorAll('.checkbox-item input');
+      on('ptCP2S1', cp2cbs[0]?.checked);
+      on('ptCP2S2', cp2cbs[1]?.checked);
+      on('ptCP2S3', cp2cbs[2]?.checked);
+      on('ptCP2S4', cp2cbs[3]?.checked);
+    }
+
+    const wd2 = getRadioVal('wd2');
+    on('ptWD2Yes', wd2 === 'yes');
+    on('ptWD2No',  wd2 === 'no' || wd2 === '');
+    const wd2Sel = document.querySelector('#lg2 .limit-card.selected .limit-amount');
+    fill('ptWD2Limit', wd2 === 'yes' && wd2Sel ? wd2Sel.textContent : (wd2 === 'no' ? 'Not authorized' : ''));
+  }
+
+  // ── VII. CONSENT ──
+  const sec6 = document.getElementById('sec-6');
+  if(sec6) {
+    const cbs = sec6.querySelectorAll('.checkbox-item input');
+    on('ptConsentEmail',  cbs[0]?.checked);
+    on('ptConsentSMS',    cbs[1]?.checked);
+    on('ptConsentSocmed', cbs[2]?.checked);
+    on('ptConsentPostal', cbs[3]?.checked);
+    on('ptConsentOTC',    cbs[4]?.checked);
+  }
+
+  // ── VIII. BANK USE ONLY ──
+  fill('ptAcct1',       getVal('Existing Account No. 1'));
+  fill('ptAcct1Status', ''); // status from select
+  fill('ptAcct2',       getVal('Existing Account No. 2'));
+  fill('ptAcct2Status', '');
+
+  const sec7 = document.getElementById('sec-7');
+  if(sec7) {
+    const selects = sec7.querySelectorAll('select.form-input');
+    fill('ptAcct1Status', selects[0]?.value || '');
+    fill('ptAcct2Status', selects[1]?.value || '');
+
+    const behalf = getRadioVal('behalf');
+    on('ptBehalfYes', behalf === 'y');
+    on('ptBehalfNo',  behalf === 'n');
+  }
+
+  fill('ptBOLast',    getSubVal('Beneficial Owner','Last Name'));
+  fill('ptBOFirst',   getSubVal('Beneficial Owner','First Name'));
+  fill('ptBORel',     getSubVal('Beneficial Owner','Relationship'));
+  fill('ptBODOB',     getSubVal('Beneficial Owner','Date of Birth'));
+  fill('ptBOAddr',    getSubVal('Beneficial Owner','Address'));
+  fill('ptBOContact', getSubVal('Beneficial Owner','Contact'));
+  fill('ptBOSOF',     getSubVal('Beneficial Owner','Source of Fund'));
+
+  fill('ptRisk',           getSubVal('Account Processing','Risk'));
+  fill('ptAcctNo',         getSubVal('Account Processing','Account Number'));
+  fill('ptDateOpened',     getSubVal('Account Processing','Date Opened'));
+  fill('ptBankInitDeposit',getSubVal('Account Processing','Initial Deposit'));
 }
 
-// PRINT
+
+/* ---------- ACTION BUTTONS ---------- */
+
+// Auto-scale the print template to guarantee single-page fit on long bond paper
+function autoScalePrintTemplate() {
+  // With explicit page-break-before on Section V, content splits naturally.
+  // We just ensure the template is visible and properly reset.
+  const tmpl = document.getElementById('printTemplate');
+  if (!tmpl) return;
+  const page = tmpl.querySelector('.pt-page');
+  if (!page) return;
+  page.style.transform = '';
+  page.style.transformOrigin = '';
+  tmpl.style.height = '';
+  tmpl.style.overflow = '';
+  tmpl.style.display = 'block';
+}
+
 document.getElementById('btnPrint').onclick = () => {
-  expandAllSections();
+  buildPrintTemplate();
+  autoScalePrintTemplate();
   toast('🖨️ Opening print dialog…');
-  setTimeout(() => {
-    window.print();
-    // Restore after dialog closes (best-effort)
-    setTimeout(restoreCollapsed, 1000);
-  }, 300);
+  // Wait for all images in print template to fully load before printing
+  const imgs = document.querySelectorAll('#printTemplate img[src]:not([src=""])');
+  const promises = Array.from(imgs).map(img => {
+    if (img.complete) return Promise.resolve();
+    return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+  });
+  Promise.all(promises).then(() => {
+    setTimeout(() => { window.print(); }, 300);
+  });
 };
 
-// SAVE AS PDF
 document.getElementById('btnPdf').onclick = () => {
-  expandAllSections();
+  buildPrintTemplate();
+  autoScalePrintTemplate();
+  const origTitle = document.title;
+  const last  = getFieldVal('Last Name').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'') || 'CIS';
+  const first = getFieldVal('First Name').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  const date  = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  document.title = 'RBCCI_CIS_' + last + (first ? '_'+first : '') + '_' + date;
   toast('📥 Preparing PDF — select "Save as PDF" in the print dialog…');
-  // Small delay to let sections render fully
-  setTimeout(() => {
-    // Set document title temporarily for a cleaner PDF filename
-    const origTitle = document.title;
-    const data = collectFormData();
-    const lastName = data['I. Customer Profile_Last Name & Suffix'] ||
-                     data['Last Name & Suffix'] ||
-                     Object.values(data).find(v => v && typeof v === 'string' && v.length > 0) ||
-                     'CIS';
-    document.title = 'RBCCI_CIS_' + lastName.replace(/\s+/g, '_') + '_' + new Date().toLocaleDateString('en-PH').replace(/\//g, '-');
-    window.print();
-    // Restore title and collapsed state
+  const imgs = document.querySelectorAll('#printTemplate img[src]:not([src=""])');
+  const promises = Array.from(imgs).map(img => {
+    if (img.complete) return Promise.resolve();
+    return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+  });
+  Promise.all(promises).then(() => {
     setTimeout(() => {
-      document.title = origTitle;
-      restoreCollapsed();
-    }, 1000);
-  }, 350);
+      window.print();
+      setTimeout(() => { document.title = origTitle; }, 1500);
+    }, 300);
+  });
 };
 document.getElementById('btnSave').onclick = () => {
   AutoSave.manualSave();
@@ -1789,6 +3794,70 @@ document.getElementById('btnDocx').onclick = async () => {
       spacing: { after: 200 },
       children: [new TextRun({ text: 'RBS005a Rev. 2026 | Generated: ' + new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' }), size: 16, color: '999999', font: 'Arial' })],
     }));
+
+    // === PHOTOS — embed portrait + ID doc photos at top of document ===
+    const photos = getPhotoDataUrls();
+
+    // Helper: base64 dataURL → Uint8Array
+    function dataUrlToBytes(dataUrl) {
+      const base64 = dataUrl.split(',')[1];
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes;
+    }
+    // Helper: get natural image dimensions
+    function getImgDims(dataUrl) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+        img.onerror = () => resolve({ w: 640, h: 480 });
+        img.src = dataUrl;
+      });
+    }
+    // Helper: add an image paragraph
+    async function addImagePara(dataUrl, labelText, maxWidthPt) {
+      const dims = await getImgDims(dataUrl);
+      const ptW  = maxWidthPt;
+      const ptH  = Math.round(maxWidthPt * (dims.h / dims.w));
+      children.push(new Paragraph({
+        spacing: { before: 60, after: 16 },
+        children: [new TextRun({ text: labelText, bold: true, size: 16, color: '555555', font: 'Arial' })],
+      }));
+      children.push(new Paragraph({
+        spacing: { before: 0, after: 120 },
+        children: [new ImageRun({
+          data: dataUrlToBytes(dataUrl),
+          transformation: { width: ptW, height: ptH },
+        })],
+      }));
+    }
+
+    // Portrait (Section I) — shown prominently at top
+    if (photos.portrait) {
+      children.push(new Paragraph({
+        spacing: { before: 80, after: 80 },
+        children: [new TextRun({ text: 'CUSTOMER PHOTO', bold: true, size: 22, color: PINE, font: 'Arial' })],
+      }));
+      await addImagePara(photos.portrait, 'Portrait / Face Photo', 90);
+    }
+
+    // ID Document Photos (Section IV)
+    const idDocPhotos = [
+      { label: 'Primary ID Document',    data: photos.primary    },
+      { label: 'Secondary ID Document',  data: photos.secondary  },
+      { label: 'Additional ID Document', data: photos.additional },
+    ].filter(p => p.data);
+
+    if (idDocPhotos.length > 0) {
+      children.push(new Paragraph({
+        spacing: { before: 100, after: 80 },
+        children: [new TextRun({ text: 'PROOF OF IDENTIFICATION — CAPTURED PHOTOS', bold: true, size: 22, color: PINE, font: 'Arial' })],
+      }));
+      for (const entry of idDocPhotos) {
+        await addImagePara(entry.data, entry.label, 300);
+      }
+    }
 
     updateBar(50);
 
@@ -2095,6 +4164,20 @@ document.getElementById('btnXlsx').onclick = async () => {
     ws4['!cols'] = [ { wch: 55 }, { wch: 25 }, { wch: 25 } ];
     ws4['!merges'] = [ { s: { r: 0, c: 0 }, e: { r: 0, c: 2 } } ];
     XLSX.utils.book_append_sheet(wb, ws4, 'Withdrawal Auth');
+
+    // ---- SHEET 5: ID Photos Reference ----
+    const photosXlsx = getPhotoDataUrls();
+    const photoRows = [['ID PHOTO REFERENCE'], [], ['Slot', 'Purpose', 'Status']];
+    photoRows.push(['Customer Portrait', 'Section I — Profile Photo', photosXlsx.portrait   ? 'Captured ✓' : 'Not captured']);
+    photoRows.push(['Primary ID Doc',   'Section IV — Primary ID',   photosXlsx.primary     ? 'Captured ✓' : 'Not captured']);
+    photoRows.push(['Secondary ID Doc', 'Section IV — Secondary ID', photosXlsx.secondary   ? 'Captured ✓' : 'Not captured']);
+    photoRows.push(['Additional ID Doc','Section IV — Additional ID', photosXlsx.additional  ? 'Captured ✓' : 'Not captured']);
+    photoRows.push([]);
+    photoRows.push(['NOTE: Print or Save as PDF to include full ID photos in the document output.']);
+    const wsPhoto = XLSX.utils.aoa_to_sheet(photoRows);
+    wsPhoto['!cols'] = [{wch:20},{wch:30},{wch:16}];
+    wsPhoto['!merges'] = [{s:{r:0,c:0},e:{r:0,c:2}}];
+    XLSX.utils.book_append_sheet(wb, wsPhoto, 'ID Photos');
 
     updateBar(95);
 
@@ -2434,6 +4517,20 @@ const AutoSave = {
     ws5['!cols'] = [{wch:5},{wch:18},{wch:14},{wch:16},{wch:10}];
     ws5['!merges'] = [{s:{r:0,c:0},e:{r:0,c:4}}];
     XLSX.utils.book_append_sheet(wb, ws5, 'Save Log');
+
+    // ---- SHEET 6: ID Photos Reference ----
+    const photos6 = getPhotoDataUrls();
+    const rows6 = [['ID PHOTO REFERENCE'], [], ['Slot', 'Purpose', 'Status']];
+    rows6.push(['Customer Portrait', 'Section I — Profile Photo', photos6.portrait   ? 'Captured ✓' : 'Not captured']);
+    rows6.push(['Primary ID Doc',   'Section IV — Primary ID',   photos6.primary     ? 'Captured ✓' : 'Not captured']);
+    rows6.push(['Secondary ID Doc', 'Section IV — Secondary ID', photos6.secondary   ? 'Captured ✓' : 'Not captured']);
+    rows6.push(['Additional ID Doc','Section IV — Additional ID', photos6.additional  ? 'Captured ✓' : 'Not captured']);
+    rows6.push([]);
+    rows6.push(['NOTE: Full image data is stored in the form session. Print or Save as PDF to capture full images in the document.']);
+    const ws6 = XLSX.utils.aoa_to_sheet(rows6);
+    ws6['!cols'] = [{wch:20},{wch:30},{wch:16}];
+    ws6['!merges'] = [{s:{r:0,c:0},e:{r:0,c:2}}];
+    XLSX.utils.book_append_sheet(wb, ws6, 'ID Photos');
 
     // Generate filename
     let filename = 'RBCCI_CIS_Individual';
